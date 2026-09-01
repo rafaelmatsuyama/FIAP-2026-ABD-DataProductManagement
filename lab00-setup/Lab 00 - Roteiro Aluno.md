@@ -2,8 +2,8 @@
 
 **Curso / Disciplina:** MBA em Engenharia de Dados (ABD) — Data Product Management & Value Delivery (DPM)  
 **Ambiente:** GitHub Codespaces (Linux DevContainer) ou Local (Python 3.11+)  
-**Linguagem / Stack:** Python 3.11+ / DuckDB / datacontract-cli / dbt-duckdb / Soda Core  
-**Duração Estimada:** 15 a 20 minutos  
+**Linguagem / Stack:** Python 3.11+ / DuckDB / datacontract-cli / pip  
+**Duração Estimada:** 10 a 15 minutos  
 
 ---
 
@@ -13,9 +13,9 @@ O objetivo deste laboratório inicial é garantir a **padronização e prontidã
 
 Ao final deste laboratório, você será capaz de:
 1. Inicializar uma sessão reprodutível no **GitHub Codespaces** ou em ambiente local.
-2. Validar a instalação e operabilidade das ferramentas essenciais do curso (`duckdb`, `datacontract-cli`, `dbt-duckdb`, `soda-core`).
-3. Executar consultas analíticas OLAP locais via **DuckDB** sobre arquivos colunares Parquet (`transactions.parquet`).
-4. Reconhecer a arquitetura de workspaces e diretórios dos próximos laboratórios.
+2. Instalar o stack da **Aula 01** em segundos utilizando o gerenciador **`pip`**.
+3. Validar a instalação e operabilidade das ferramentas essenciais (`duckdb`, `datacontract-cli`, `pyarrow`).
+4. Executar consultas analíticas OLAP locais via **DuckDB** sobre arquivos colunares Parquet (`transactions.parquet`).
 
 ---
 
@@ -23,7 +23,7 @@ Ao final deste laboratório, você será capaz de:
 
 * Acesso à internet e conta ativa no **GitHub** com permissões no repositório da disciplina.
 * Navegador moderno (Google Chrome, Firefox ou Microsoft Edge) para operar o Codespaces no browser.
-* *(Opcional para execução local)*: Python 3.11 ou superior instalado e gerenciador de pacotes (`uv` ou `pip`).
+* *(Opcional para execução local)*: Python 3.11 ou superior instalado e gerenciador de pacotes (`pip`).
 
 ---
 
@@ -37,19 +37,29 @@ Ao final deste laboratório, você será capaz de:
 
 > 💡 **Nota para execução Local:** Se preferir rodar em sua máquina, clone o repositório, crie um ambiente virtual e instale os requisitos:
 > ```bash
+> # Criar ambiente virtual
 > python -m venv .venv
 > source .venv/bin/activate  # No Windows: .venv\Scripts\activate
-> pip install duckdb datacontract-cli dbt-duckdb soda-core
 > ```
 
 ---
 
-### Passo 2: Navegação e Sanity Check do Stack com `check_env.py`
+### Passo 2: Navegação e Instalação do Stack
 
-Abra o terminal integrado (`Ctrl + ~`). Navegue até a pasta deste laboratório e execute o script de validação:
+Abra o terminal integrado (`Ctrl + ~`). A pasta raiz do terminal é `labs`.
 
+1. Navegue para a pasta deste laboratório:
 ```bash
 cd lab00-setup
+```
+
+2. Instale as dependências da **Aula 01** (~5 a 10 segundos):
+```bash
+pip install -r ../requirements.txt
+```
+
+3. Execute o script de validação de ambiente:
+```bash
 python check_env.py
 ```
 
@@ -60,75 +70,86 @@ python check_env.py
 =================================================================
   [OK] Python Runtime: v3.11+ detectado
 
---- 1. Bancos & Motores Analiticos ---
+--- 1. Ferramentas Essenciais (Aula 01: Data Products & Contracts) ---
   [OK] DuckDB Python Engine: Instalado e importavel.
-  [OK] CLI `duckdb` (DuckDB Interactive CLI): Disponivel em /usr/local/bin/duckdb
-
---- 2. Data Contracts & Modelagem ---
   [OK] datacontract-cli (ODCS Engine): Instalado e importavel.
-  [OK] CLI `datacontract` (datacontract CLI): Disponivel em /usr/local/bin/datacontract
+  [OK] Pandas DataFrame: Instalado e importavel.
+  [OK] Apache Arrow (Parquet Engine): Instalado e importavel.
 
---- 3. Analytics Engineering & Transformacao ---
-  [OK] dbt-core: Instalado e importavel.
-  [OK] dbt-duckdb Adapter: Instalado e importavel.
-
---- 4. Data Quality & Observabilidade ---
-  [OK] Soda Core Engine: Instalado e importavel.
+--- 2. Ferramentas das Proximas Aulas (Aulas 02 e 03) ---
+  [AVISO] dbt-core (Aula 02): Nao encontrado via Python import.
+  [AVISO] dbt-duckdb Adapter (Aula 02): Nao encontrado via Python import.
+  [AVISO] Soda Core Engine (Aula 03): Nao encontrado via Python import.
 
 =================================================================
-  [OK] AMBIENTE 100% PRONTO PARA OS LABS DA DISCIPLINA!
+  [OK] AMBIENTE 100% PRONTO PARA OS LABS DA AULA 01!
+  (As ferramentas das Aulas 02 e 03 serao adicionadas nas proximas sessoes)
 =================================================================
-```
-
-Caso alguma biblioteca apresente aviso de ausência, execute a instalação rápida:
-```bash
-pip install -r ../requirements.txt
 ```
 
 ---
 
-### Passo 3: Geração e Exploração do Dataset Base (`transactions.parquet`)
+### Passo 3: Geração do Dataset Base (`transactions.parquet`)
 
-Para os laboratórios de contratos de dados e observabilidade, utilizaremos uma base de transações financeiras e pagamentos.
+Para os laboratórios de contratos de dados e observabilidade, utilizaremos uma base de transações financeiras e pagamentos corporativos.
 
-Dentro do diretório `lab00-setup`, execute o script utilitário para gerar a base sintética inicial:
+Dentro do diretório `lab00-setup`, execute o gerador de dados sintéticos:
 
 ```bash
 python generate_sample_data.py
 ```
 
-O script criará o arquivo `data/transactions.parquet` contendo registros transacionais corporativos com campos de identificação, valores monetários, métodos de pagamento e timestamps.
+O script criará o arquivo `data/transactions.parquet` contendo 2.500 registros transacionais com campos de identificação, valores monetários, métodos de pagamento e timestamps.
 
 ---
 
-### Passo 4: Consulta Analítica Rápida com DuckDB
+### Passo 4: Consulta Analítica com DuckDB
 
-Vamos testar o processamento colunar em memória do DuckDB consultando diretamente o arquivo Parquet gerado:
+Vamos testar o processamento colunar em memória do DuckDB consultando diretamente o arquivo Parquet gerado através do script utilitário `query_data.py`:
 
-1. Inicie o cliente interativo do DuckDB:
+1. Execute a consulta analítica:
 ```bash
-duckdb
+python query_data.py
 ```
 
-2. Execute as seguintes consultas SQL analíticas:
-```sql
--- 1. Inspecionar o schema e tipos de dados do arquivo Parquet
-DESCRIBE SELECT * FROM 'data/transactions.parquet';
+#### Saída Esperada no Terminal:
+```text
+=================================================================
+  🦆 CONSULTA ANALITICA VIA DUCKDB (EM-MEMORIA)
+=================================================================
 
--- 2. Calcular métricas agregadas de transações por método de pagamento
-SELECT 
-    payment_method,
-    COUNT(*) AS total_transactions,
-    ROUND(SUM(amount), 2) AS total_amount,
-    ROUND(AVG(amount), 2) AS avg_ticket
-FROM 'data/transactions.parquet'
-GROUP BY payment_method
-ORDER BY total_amount DESC;
+--- 1. Inspecao de Schema & Tipos (DESCRIBE) ---
+┌───────────────────────┬─────────────┬─────────┬─────────┬─────────┬───────┐
+│      column_name      │ column_type │  null   │   key   │ default │ extra │
+│        varchar        │   varchar   │ varchar │ varchar │ varchar │ int32 │
+├───────────────────────┼─────────────┼─────────┼─────────┼─────────┼───────┤
+│ transaction_id        │ VARCHAR     │ YES     │ NULL    │ NULL    │  NULL │
+│ customer_id           │ VARCHAR     │ YES     │ NULL    │ NULL    │  NULL │
+│ amount                │ DECIMAL(18,2)│ YES    │ NULL    │ NULL    │  NULL │
+│ payment_method        │ VARCHAR     │ YES     │ NULL    │ NULL    │  NULL │
+│ status                │ VARCHAR     │ YES     │ NULL    │ NULL    │  NULL │
+│ currency              │ VARCHAR     │ YES     │ NULL    │ NULL    │  NULL │
+│ transaction_timestamp │ TIMESTAMP   │ YES     │ NULL    │ NULL    │  NULL │
+└───────────────────────┴─────────────┴─────────┴─────────┴─────────┴───────┘
+
+--- 2. Metricas Agregadas por Metodo de Pagamento ---
+┌────────────────┬────────────────────┬──────────────┬────────────┐
+│ payment_method │ total_transactions │ total_amount │ avg_ticket │
+│    varchar     │       int64        │   decimal    │  decimal   │
+├────────────────┼────────────────────┼──────────────┼────────────┤
+│ PIX            │                640 │    489210.50 │     764.39 │
+│ CREDIT_CARD    │                635 │    481102.10 │     757.64 │
+│ DEBIT_CARD     │                615 │    465430.80 │     756.80 │
+│ BOLETO         │                610 │    459890.30 │     753.92 │
+└────────────────┴────────────────────┴──────────────┴────────────┘
+=================================================================
+  [OK] Processamento analitico DuckDB executado com sucesso!
+=================================================================
 ```
 
-3. Para sair da interface interativa do DuckDB:
-```sql
-.exit
+2. *(Opcional)* Você também pode rodar consultas SQL rápidas direto da linha de comando via Python:
+```bash
+python -c "import duckdb; duckdb.sql(\"SELECT payment_method, COUNT(*) AS total FROM 'data/transactions.parquet' GROUP BY payment_method\").show()"
 ```
 
 ---
@@ -137,10 +158,10 @@ ORDER BY total_amount DESC;
 
 Para garantir que o seu setup está aprovado e pronto para o **Lab 01**:
 
-1. [x] Script `check_env.py` executou com sucesso a partir de `lab00-setup`.
-2. [x] O arquivo `data/transactions.parquet` foi gerado e possui registros consolidados.
-3. [x] A query de agregação no DuckDB retornou as métricas de transações por `payment_method`.
-4. [x] O comando `datacontract --help` responde com a listagem de comandos do OpenDataContract CLI.
+1. [x] Dependências da Aula 01 instaladas com sucesso (`duckdb`, `datacontract-cli`, `pandas`, `pyarrow`).
+2. [x] Script `check_env.py` executou com status `[OK] AMBIENTE 100% PRONTO PARA OS LABS DA AULA 01!`.
+3. [x] O arquivo `data/transactions.parquet` foi gerado com sucesso.
+4. [x] O script `query_data.py` exibiu o schema e a agregação por método de pagamento.
 
 ---
 
@@ -162,5 +183,5 @@ cd ..
 
 ## 💡 Desafios Complementares (Para Praticar)
 
-1. **Consulta com Filtro Temporal no DuckDB:** Escreva uma query SQL que identifique quais transações ocorreram no último trimestre e filtre valores acima de `R$ 1.000,00`.
-2. **Exploração via Python:** Crie um script rápido `test_duckdb.py` utilizando `import duckdb` e imprima o resultado da query em formato de DataFrame Pandas (`duckdb.sql("...").df()`).
+1. **Consulta com Filtro Temporal no DuckDB:** Edite o script `query_data.py` e adicione uma query SQL que identifique quais transações ocorreram com status `FAILED` e valor acima de `R$ 1.000,00`.
+2. **Exportação de Relatório:** Utilize o comando `COPY (...) TO 'data/report.csv' (HEADER, DELIMITER ',')` no DuckDB para gerar um relatório CSV sumarizado a partir do Parquet.

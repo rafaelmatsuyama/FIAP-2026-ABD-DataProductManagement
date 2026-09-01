@@ -1,4 +1,4 @@
-"""Sample data generator for 8ABDR - DPM Labs.
+"""Sample data generator for MBA ABD - DPM Labs.
 
 Generates transactions dataset in Parquet format for Data Product & Contract Labs.
 """
