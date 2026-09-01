@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "product_name": "financial_transactions_product",
+  "version": "1.0.0",
+  "domain": "Fintech & Core Banking",
+  "fields": [
+    {
+      "name": "transaction_id",
+      "type": "VARCHAR",
+      "required": true,
+      "unique": true,
+      "description": "Identificador único da transação financeira."
+    },
+    {
+      "name": "customer_id",
+      "type": "VARCHAR",
+      "required": true,
+      "unique": false,
+      "description": "Identificador pseudo-anonimizado do cliente pagador."
+    },
+    {
+      "name": "amount",
+      "type": "DECIMAL(18,2)",
+      "required": true,
+      "minimum": 0.01,
+      "description": "Valor financeiro monetário da transação."
+    },
+    {
+      "name": "payment_method",
+      "type": "VARCHAR",
+      "required": true,
+      "allowed_values": ["PIX", "CREDIT_CARD", "DEBIT_CARD", "BOLETO"],
+      "description": "Canal ou arranjo de pagamento utilizado."
+    },
+    {
+      "name": "status",
+      "type": "VARCHAR",
+      "required": true,
+      "allowed_values": ["COMPLETED", "PENDING", "FAILED"],
+      "description": "Status operacional do processamento da transação."
+    },
+    {
+      "name": "currency",
+      "type": "VARCHAR",
+      "required": true,
+      "allowed_values": ["BRL", "USD", "EUR"],
+      "description": "Código da moeda transacionada (ISO 4217)."
+    },
+    {
+      "name": "transaction_timestamp",
+      "type": "TIMESTAMP",
+      "required": true,
+      "description": "Data e hora do registro da transação."
+    }
+  ]
+}
