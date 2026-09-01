@@ -1,0 +1,11 @@
+# MBA em Engenharia de Dados (ABD) - DPM
+# Core stack for Labs 00 to 08
+
+duckdb>=1.1.0
+datacontract-cli>=0.10.0
+dbt-core>=1.8.0
+dbt-duckdb>=1.8.0
+soda-core>=3.3.0
+soda-core-duckdb>=3.3.0
+pandas>=2.2.0
+pyarrow>=17.0.0
