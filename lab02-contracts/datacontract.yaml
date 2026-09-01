@@ -1,0 +1,80 @@
+dataContractSpecification: 0.9.3
+id: urn:datacontract:fintech:transactions:v1
+info:
+  title: Financial Risk & Payment Transactions Product
+  version: 1.0.0
+  status: active
+  description: Produto de dados transacionais para modelos de risco, prevenção a fraudes e relatórios regulatórios.
+  owner: Squad de Risco & Prevenção a Fraudes
+  contact:
+    name: Time de Engenharia & DPO
+    email: dpo.risco@empresa.com
+
+servers:
+  local:
+    type: duckdb
+    database: data/analytics.duckdb
+    description: Banco analítico local DuckDB contendo a tabela transactions.
+
+models:
+  transactions:
+    description: Eventos transacionais consolidados por arranjo de pagamento.
+    type: table
+    fields:
+      transaction_id:
+        type: varchar
+        primary: true
+        required: true
+        unique: true
+        description: Identificador global e único da transação.
+      customer_id:
+        type: varchar
+        required: true
+        pii: true
+        classification: confidential
+        description: Identificador pseudo-anonimizado do cliente.
+      amount:
+        type: decimal
+        required: true
+        minimum: 0.01
+        description: Valor financeiro líquido da transação.
+      payment_method:
+        type: varchar
+        required: true
+        enum:
+          - PIX
+          - CREDIT_CARD
+          - DEBIT_CARD
+          - BOLETO
+        description: Canal ou método de pagamento utilizado.
+      status:
+        type: varchar
+        required: true
+        enum:
+          - COMPLETED
+          - PENDING
+          - FAILED
+        description: Estado de liquidação da transação.
+      currency:
+        type: varchar
+        required: true
+        enum:
+          - BRL
+          - USD
+          - EUR
+        description: Moeda transacionada (ISO 4217).
+      transaction_timestamp:
+        type: timestamp
+        required: true
+        description: Timestamp do registro no sistema de origem.
+
+servicelevels:
+  freshness:
+    threshold: 15m
+    description: Dados disponíveis no output port em no máximo 15 minutos.
+  frequency:
+    type: microbatch
+    description: Processamento em micro-batches a cada 5 minutos.
+  retention:
+    period: 365d
+    description: Retenção obrigatória de 1 ano para fins de auditoria regulatória.

@@ -1,0 +1,52 @@
+dataContractSpecification: 0.9.3
+id: urn:datacontract:fintech:transactions:v2-breaking
+info:
+  title: Financial Risk & Payment Transactions Product (Cenário de Quebra)
+  version: 2.0.0
+  status: draft
+  description: Contrato com breaking changes deliberadas para demonstrar a atuação do Quality Gate.
+  owner: Squad de Risco & Prevenção a Fraudes
+
+servers:
+  local:
+    type: duckdb
+    database: data/analytics.duckdb
+
+models:
+  transactions:
+    description: Eventos transacionais com restrições incompatíveis deliberadas.
+    type: table
+    fields:
+      transaction_id:
+        type: varchar
+        primary: true
+        required: true
+        unique: true
+      customer_id:
+        type: varchar
+        required: true
+      amount:
+        type: decimal
+        required: true
+        # ⚠️ BREAKING CHANGE 1: Regra restrita demais (viola transações reais abaixo de R$ 2.000)
+        minimum: 2000.00
+      payment_method:
+        type: varchar
+        required: true
+        # ⚠️ BREAKING CHANGE 2: Remoção arbitrária de PIX e BOLETO da lista permitida
+        enum:
+          - CRYPTO_TRANSFER
+          - INTERNATIONAL_WIRE
+      status:
+        type: varchar
+        required: true
+      currency:
+        type: varchar
+        required: true
+      transaction_timestamp:
+        type: timestamp
+        required: true
+      # ⚠️ BREAKING CHANGE 3: Campo obrigatório adicionado sem compatibilidade retroativa
+      merchant_tax_id:
+        type: varchar
+        required: true
