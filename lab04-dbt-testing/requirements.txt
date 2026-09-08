@@ -1,0 +1,2 @@
+# Dependencias isoladas do Lab 04 (Esteira de Testes com dbt)
+dbt-duckdb>=1.8.0

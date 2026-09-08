@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Dimensão de clientes ativos."
+    columns:
+      - name: customer_id
+        description: "Chave primária do cliente."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_name
+        description: "Nome do cliente."
+      - name: customer_tier
+        description: "Categoria de fidelidade."
+
+  - name: fct_financial_transactions
+    description: "Mart analítico de transações financeiras liquidadas com testes estatísticos."
+    config:
+      contract:
+        enforced: true
+    data_tests:
+      # Teste estatístico de volumetria de lote (dbt-expectations)
+      - dbt_expectations.expect_table_row_count_to_be_between:
+          arguments:
+            min_value: 500
+            max_value: 1500
+    columns:
+      - name: transaction_id
+        data_type: varchar
+        description: "Identificador único da transação."
+        constraints:
+          - type: not_null
+        data_tests:
+          - unique
+          - not_null
+          # Teste de padrão regex (dbt-expectations)
+          - dbt_expectations.expect_column_values_to_match_regex:
+              arguments:
+                regex: '^TX_[0-9]+$'
+
+      - name: customer_id
+        data_type: varchar
+        description: "Chave estrangeira do cliente pagador."
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          # Teste nativo de integridade referencial com sintaxe moderna
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+
+      - name: amount
+        data_type: double
+        description: "Valor bruto da transação."
+        data_tests:
+          - not_null
+          # Teste de faixa de valores de negócio (dbt-expectations)
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0.01
+                max_value: 5000.00
+
+      - name: fee
+        data_type: double
+        description: "Taxa de processamento."
+
+      - name: net_amount
+        data_type: double
+        description: "Valor líquido creditado ao recebedor."
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0.00
+                max_value: 5000.00
+
+      - name: currency
+        data_type: varchar
+        description: "Moeda ISO 4217."
+
+      - name: status
+        data_type: varchar
+        description: "Status de liquidação."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['COMPLETED']
+
+      - name: payment_method
+        data_type: varchar
+        description: "Meio de pagamento."
+
+      - name: created_at
+        data_type: timestamp
+        description: "Timestamp do evento."

@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw_sources
+    schema: main
+    description: "Fontes brutas ingeridas na base analytics.duckdb."
+    tables:
+      - name: transactions
+        description: "Eventos brutos de transações financeiras."
+      - name: customers
+        description: "Cadastro bruto de clientes."

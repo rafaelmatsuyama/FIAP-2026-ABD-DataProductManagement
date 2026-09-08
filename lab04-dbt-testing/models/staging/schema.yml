@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: "Visão padronizada e limpa das transações financeiras brutas."
+    columns:
+      - name: transaction_id
+        description: "Identificador único da transação."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Identificador do cliente pagador."
+        data_tests:
+          - not_null
+      - name: amount
+        description: "Valor monetário bruto da transação."
+        data_tests:
+          - not_null
+      - name: status
+        description: "Status do processamento."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['COMPLETED', 'FAILED']
+      - name: payment_method
+        description: "Meio de pagamento."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['PIX', 'CREDIT_CARD', 'BOLETO']
+
+  - name: stg_customers
+    description: "Visão padronizada dos clientes cadastrados."
+    columns:
+      - name: customer_id
+        description: "Chave primária do cliente."
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_tier
+        description: "Categoria de fidelidade do cliente."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['STANDARD', 'GOLD', 'VIP']
