@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: fct_financial_transactions
+    description: "Mart analítico de transações financeiras liquidadas (Data Product de Consumo Corporativo)."
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: transaction_id
+        data_type: varchar
+        description: "Identificador universal da transação."
+        constraints:
+          - type: not_null
+      - name: customer_id
+        data_type: varchar
+        description: "Identificador único do cliente consumidor."
+        constraints:
+          - type: not_null
+      - name: amount
+        data_type: double
+        description: "Valor bruto da transação financeira."
+      - name: fee
+        data_type: double
+        description: "Taxa de liquidação cobrada."
+      - name: net_amount
+        data_type: double
+        description: "Valor líquido creditado ao recebedor."
+      - name: currency
+        data_type: varchar
+        description: "Moeda ISO 4217 (ex: BRL, USD)."
+      - name: status
+        data_type: varchar
+        description: "Status de liquidação da transação."
+      - name: payment_method
+        data_type: varchar
+        description: "Meio de pagamento processado (PIX, CREDIT_CARD, BOLETO)."
+      - name: created_at
+        data_type: timestamp
+        description: "Carimbo de data/hora do processamento da transação."

@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: "Visão limpa, tipada e padronizada das transações financeiras brutas."
+    columns:
+      - name: transaction_id
+        description: "Identificador único da transação."
+      - name: customer_id
+        description: "Identificador do cliente pagador."
+      - name: amount
+        description: "Valor monetário bruto da transação."
+      - name: fee
+        description: "Taxa de processamento associada."
+      - name: currency
+        description: "Código de moeda (ex: BRL)."
+      - name: status
+        description: "Status de processamento da transação."
+      - name: payment_method
+        description: "Meio de pagamento utilizado."
+      - name: created_at
+        description: "Timestamp de registro do evento."

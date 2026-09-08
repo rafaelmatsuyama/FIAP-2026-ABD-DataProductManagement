@@ -1,0 +1,23 @@
+name: 'data_product_dpm'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dpm_duckdb'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  data_product_dpm:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
