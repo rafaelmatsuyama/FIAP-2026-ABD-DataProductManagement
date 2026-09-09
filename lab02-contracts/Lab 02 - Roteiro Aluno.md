@@ -168,12 +168,12 @@ O Data Contract serve como especificação central a partir da qual outros forma
 
 1. **Exportar como JSON Schema:**
 ```bash
-datacontract export --format jsonschema datacontract.yaml
+datacontract export jsonschema datacontract.yaml
 ```
 
 2. **Exportar como DDL SQL (Tabela PostgreSQL / DuckDB):**
 ```bash
-datacontract export --format sql datacontract.yaml
+datacontract export sql datacontract.yaml
 ```
 
 ---
