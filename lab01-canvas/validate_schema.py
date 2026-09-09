@@ -10,7 +10,7 @@ import sys
 try:
     import duckdb
 except ImportError:
-    print("[ERRO] DuckDB nao instalado. Execute 'pip install -r ../requirements.txt' primeiro.")
+    print("[ERRO] DuckDB nao instalado. Execute 'pip install -r ../requirements-aula01.txt' primeiro.")
     sys.exit(1)
 
 
@@ -34,15 +34,27 @@ def find_or_copy_parquet() -> Path:
     con = duckdb.connect()
     con.execute(f"""
         CREATE TABLE raw_transactions AS
+        WITH base AS (
+            SELECT
+                'TX_' || LPAD((range + 1)::VARCHAR, 6, '0') AS transaction_id,
+                'CUST_' || LPAD(((range % 100) + 1)::VARCHAR, 4, '0') AS customer_id,
+                ROUND((RANDOM() * 450 + 15.50)::NUMERIC, 2) AS amount,
+                ['PIX', 'CREDIT_CARD', 'BOLETO'][FLOOR(RANDOM() * 3 + 1)::INT] AS payment_method,
+                CASE WHEN range % 10 = 0 THEN 'FAILED' ELSE 'COMPLETED' END AS status,
+                ['BRL', 'BRL', 'USD', 'EUR'][FLOOR(RANDOM() * 4 + 1)::INT] AS currency,
+                TIMESTAMP '2026-09-01 10:00:00' + INTERVAL (range * 5) MINUTE AS created_at
+            FROM range(1000)
+        )
         SELECT
-            'tx_' || LPAD(range::VARCHAR, 6, '0') AS transaction_id,
-            'cust_' || LPAD((FLOOR(RANDOM() * 500) + 1)::INT::VARCHAR, 4, '0') AS customer_id,
-            ROUND((RANDOM() * 1500 + 10.50)::NUMERIC, 2) AS amount,
-            ['PIX', 'CREDIT_CARD', 'DEBIT_CARD', 'BOLETO'][FLOOR(RANDOM() * 4 + 1)::INT] AS payment_method,
-            ['COMPLETED', 'COMPLETED', 'COMPLETED', 'PENDING', 'FAILED'][FLOOR(RANDOM() * 5 + 1)::INT] AS status,
-            ['BRL', 'BRL', 'USD', 'EUR'][FLOOR(RANDOM() * 4 + 1)::INT] AS currency,
-            TIMESTAMP '2026-01-01 00:00:00' + INTERVAL (RANDOM() * 60 * 24 * 60) MINUTE AS transaction_timestamp
-        FROM range(2500);
+            transaction_id,
+            customer_id,
+            amount,
+            ROUND(amount * 0.02, 2) AS fee,
+            payment_method,
+            status,
+            currency,
+            created_at
+        FROM base;
         COPY raw_transactions TO '{local_path.as_posix()}' (FORMAT PARQUET);
     """)
     print(f"[*] Base sintetica gerada em '{local_path}'.")

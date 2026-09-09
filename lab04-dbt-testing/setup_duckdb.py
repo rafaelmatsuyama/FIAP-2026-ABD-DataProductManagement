@@ -21,28 +21,44 @@ if not parquet_path.exists():
             print(f"Copiado transactions.parquet de {src}")
             break
 
+# 2. Se nao existir em nenhum local, gerar dataset canonico na hora (Self-Healing)
+if not parquet_path.exists():
+    print("[*] Dataset base nao encontrado. Gerando dados sinteticos canonicos (Self-Healing)...")
+    mem_con = duckdb.connect()
+    mem_con.execute(f"""
+        CREATE TABLE raw_transactions AS
+        WITH base AS (
+            SELECT
+                'TX_' || LPAD((range + 1)::VARCHAR, 6, '0') AS transaction_id,
+                'CUST_' || LPAD(((range % 100) + 1)::VARCHAR, 4, '0') AS customer_id,
+                ROUND((RANDOM() * 450 + 15.50)::NUMERIC, 2) AS amount,
+                ['PIX', 'CREDIT_CARD', 'BOLETO'][FLOOR(RANDOM() * 3 + 1)::INT] AS payment_method,
+                CASE WHEN range % 10 = 0 THEN 'FAILED' ELSE 'COMPLETED' END AS status,
+                ['BRL', 'BRL', 'USD', 'EUR'][FLOOR(RANDOM() * 4 + 1)::INT] AS currency,
+                TIMESTAMP '2026-09-01 10:00:00' + INTERVAL (range * 5) MINUTE AS created_at
+            FROM range(1000)
+        )
+        SELECT
+            transaction_id,
+            customer_id,
+            amount,
+            ROUND(amount * 0.02, 2) AS fee,
+            payment_method,
+            status,
+            currency,
+            created_at
+        FROM base;
+        COPY raw_transactions TO '{parquet_path.as_posix()}' (FORMAT PARQUET);
+    """)
+    mem_con.close()
+    print(f"[OK] Arquivo '{parquet_path}' gerado com sucesso!")
+
 con = duckdb.connect(str(db_path))
 
 # 1. Tabela transactions
-if parquet_path.exists():
-    con.execute(f"CREATE OR REPLACE TABLE transactions AS SELECT * FROM '{parquet_path.as_posix()}';")
-    tx_count = con.execute('SELECT COUNT(*) FROM transactions').fetchone()[0]
-    print(f"Tabela transactions inicializada com {tx_count} registros.")
-else:
-    con.execute("""
-        CREATE OR REPLACE TABLE transactions AS
-        SELECT 
-            'TX_' || LPAD(i::VARCHAR, 6, '0') AS transaction_id,
-            'CUST_' || LPAD(((i % 100) + 1)::VARCHAR, 4, '0') AS customer_id,
-            ROUND(10.0 + (i * 3.7) % 500, 2) AS amount,
-            ROUND((10.0 + (i * 3.7) % 500) * 0.02, 2) AS fee,
-            'BRL' AS currency,
-            CASE WHEN i % 10 = 0 THEN 'FAILED' ELSE 'COMPLETED' END AS status,
-            CASE WHEN i % 3 = 0 THEN 'PIX' WHEN i % 3 = 1 THEN 'CREDIT_CARD' ELSE 'BOLETO' END AS payment_method,
-            TIMESTAMP '2026-09-01 10:00:00' + INTERVAL (i * 15) MINUTE AS created_at
-        FROM generate_series(1, 1000) t(i);
-    """)
-    print("Tabela transactions criada com 1.000 transacoes sinteticas.")
+con.execute(f"CREATE OR REPLACE TABLE transactions AS SELECT * FROM '{parquet_path.as_posix()}';")
+tx_count = con.execute('SELECT COUNT(*) FROM transactions').fetchone()[0]
+print(f"Tabela transactions inicializada com {tx_count} registros.")
 
 # 2. Tabela customers (para testes relacionais)
 con.execute("""

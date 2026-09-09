@@ -40,10 +40,13 @@ models:
       status:
         type: varchar
         required: true
+      fee:
+        type: decimal
+        required: true
       currency:
         type: varchar
         required: true
-      transaction_timestamp:
+      created_at:
         type: timestamp
         required: true
       # ⚠️ BREAKING CHANGE 3: Campo obrigatório adicionado sem compatibilidade retroativa

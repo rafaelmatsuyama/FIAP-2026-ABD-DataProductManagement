@@ -1,0 +1,7 @@
+# MBA em Engenharia de Dados (ABD) - DPM
+# Stack da Aula 01: Data Products, Ciclo de Vida & Data Contracts (Labs 00 e 01)
+
+duckdb>=1.1.0
+datacontract-cli[duckdb]>=0.10.0
+pandas>=2.2.0
+pyarrow>=17.0.0

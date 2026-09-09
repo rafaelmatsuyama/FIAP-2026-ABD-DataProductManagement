@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 import duckdb
 
@@ -6,14 +7,54 @@ data_dir.mkdir(parents=True, exist_ok=True)
 db_path = data_dir / "analytics.duckdb"
 parquet_path = data_dir / "transactions.parquet"
 
-# Ensure parquet exists
+# 1. Buscar o arquivo transactions.parquet dos labs anteriores se nao existir localmente
 if not parquet_path.exists():
-    source_p = Path("../lab00-setup/data/transactions.parquet")
-    if source_p.exists():
-        import shutil
-        shutil.copy2(source_p, parquet_path)
+    possible_sources = [
+        Path("../lab00-setup/data/transactions.parquet"),
+        Path("../lab01-canvas/data/transactions.parquet"),
+        Path("../../data/transactions.parquet"),
+    ]
+    for src in possible_sources:
+        if src.exists():
+            shutil.copy2(src, parquet_path)
+            print(f"[*] Copiado transactions.parquet de {src}")
+            break
 
+# 2. Se nao existir em nenhum local, gerar dataset canônico na hora (Self-Healing)
+if not parquet_path.exists():
+    print("[*] Dataset base nao encontrado. Gerando dados sinteticos canonicos (Self-Healing)...")
+    mem_con = duckdb.connect()
+    mem_con.execute(f"""
+        CREATE TABLE raw_transactions AS
+        WITH base AS (
+            SELECT
+                'TX_' || LPAD((range + 1)::VARCHAR, 6, '0') AS transaction_id,
+                'CUST_' || LPAD(((range % 100) + 1)::VARCHAR, 4, '0') AS customer_id,
+                ROUND((RANDOM() * 450 + 15.50)::NUMERIC, 2) AS amount,
+                ['PIX', 'CREDIT_CARD', 'BOLETO'][FLOOR(RANDOM() * 3 + 1)::INT] AS payment_method,
+                CASE WHEN range % 10 = 0 THEN 'FAILED' ELSE 'COMPLETED' END AS status,
+                ['BRL', 'BRL', 'USD', 'EUR'][FLOOR(RANDOM() * 4 + 1)::INT] AS currency,
+                TIMESTAMP '2026-09-01 10:00:00' + INTERVAL (range * 5) MINUTE AS created_at
+            FROM range(1000)
+        )
+        SELECT
+            transaction_id,
+            customer_id,
+            amount,
+            ROUND(amount * 0.02, 2) AS fee,
+            payment_method,
+            status,
+            currency,
+            created_at
+        FROM base;
+        COPY raw_transactions TO '{parquet_path.as_posix()}' (FORMAT PARQUET);
+    """)
+    mem_con.close()
+    print(f"[OK] Arquivo '{parquet_path}' gerado com sucesso!")
+
+# 3. Inicializar a base DuckDB
 con = duckdb.connect(str(db_path))
 con.execute(f"CREATE OR REPLACE TABLE transactions AS SELECT * FROM '{parquet_path.as_posix()}';")
+total = con.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
 con.close()
-print("Created analytics.duckdb with transactions table.")
+print(f"[OK] Base analytics.duckdb inicializada com {total} registros na tabela 'transactions'.")

@@ -55,6 +55,11 @@ models:
           - PENDING
           - FAILED
         description: Estado de liquidação da transação.
+      fee:
+        type: decimal
+        required: true
+        minimum: 0.00
+        description: Taxa de processamento ou liquidação cobrada.
       currency:
         type: varchar
         required: true
@@ -63,7 +68,7 @@ models:
           - USD
           - EUR
         description: Moeda transacionada (ISO 4217).
-      transaction_timestamp:
+      created_at:
         type: timestamp
         required: true
         description: Timestamp do registro no sistema de origem.

@@ -8,7 +8,7 @@ from pathlib import Path
 try:
     import duckdb
 except ImportError:
-    print("[ERRO] DuckDB nao instalado. Execute 'pip install -r ../requirements.txt' primeiro.")
+    print("[ERRO] DuckDB nao instalado. Execute 'pip install -r ../requirements-aula01.txt' primeiro.")
     exit(1)
 
 

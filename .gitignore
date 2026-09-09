@@ -1,0 +1,35 @@
+# Python & Ambientes Virtuais
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Dados Locais e Bancos Analiticos gerados em Runtime
+*.duckdb
+*.duckdb.wal
+data/
+*.parquet
+
+# dbt Artifacts
+target/
+dbt_packages/
+logs/
+
+# Arquivos de Sistema & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Chaves e Variaveis de Ambiente
+.env
+*.pem
+*.key
+
+# 🛡️ Guardrails Docentes: Gabaritos e Respostas dos Desafios (Confidencial)
+*Gabarito*
+*gabarito*
+*Solution*
+*solution*

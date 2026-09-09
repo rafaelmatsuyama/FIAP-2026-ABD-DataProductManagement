@@ -22,8 +22,8 @@ Ao final deste laboratório, você será capaz de:
 
 ## 📋 Pré-requisitos & Materiais
 
-* Conclusão dos **Labs 00 e 01**.
-* Base de dados colunar gerada (`data/transactions.parquet`).
+* Acesso ao repositório no GitHub Codespaces ou ambiente local com Python 3.11+.
+* *(Autonomia Total)*: O setup é 100% autossuficiente (*self-healing*) e provisiona automaticamente os dados caso este seja o primeiro laboratório executado na sessão.
 * Arquivos fornecidos neste laboratório:
   * [`datacontract.yaml`](datacontract.yaml): Contrato canônico de produção (v1.0.0).
   * [`datacontract_breaking.yaml`](datacontract_breaking.yaml): Contrato com quebras deliberadas de negócio.
@@ -36,10 +36,11 @@ Ao final deste laboratório, você será capaz de:
 
 ### Passo 1: Navegação para a Pasta do Lab
 
-No terminal integrado (`Ctrl + ~`), entre no diretório do Lab 02:
+No terminal integrado (`Ctrl + ~`), entre no diretório do Lab 02 e garanta as dependências da Aula 02:
 
 ```bash
 cd lab02-contracts
+pip install -r ../requirements-aula02.txt
 ```
 
 ---

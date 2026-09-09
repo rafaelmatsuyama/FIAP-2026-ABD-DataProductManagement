@@ -40,6 +40,13 @@
       "description": "Status operacional do processamento da transação."
     },
     {
+      "name": "fee",
+      "type": "DECIMAL(18,2)",
+      "required": true,
+      "minimum": 0.0,
+      "description": "Taxa de liquidacao cobrada na transacao."
+    },
+    {
       "name": "currency",
       "type": "VARCHAR",
       "required": true,
@@ -47,7 +54,7 @@
       "description": "Código da moeda transacionada (ISO 4217)."
     },
     {
-      "name": "transaction_timestamp",
+      "name": "created_at",
       "type": "TIMESTAMP",
       "required": true,
       "description": "Data e hora do registro da transação."

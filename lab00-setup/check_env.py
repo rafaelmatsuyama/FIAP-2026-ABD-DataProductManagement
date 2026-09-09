@@ -60,7 +60,7 @@ def main():
             print("  (As ferramentas das Aulas 02 e 03 serao adicionadas nas proximas sessoes)")
     else:
         print("  [AVISO] FALTAM PACOTES ESSENCIAIS DA AULA 01.")
-        print("  Execute: pip install -r ../requirements.txt")
+        print("  Execute: pip install -r ../requirements-aula01.txt")
     print("=" * 65 + "\n")
 
 

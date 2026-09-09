@@ -55,7 +55,7 @@ cd lab00-setup
 
 2. Instale as dependências da **Aula 01** (~5 a 10 segundos):
 ```bash
-pip install -r ../requirements.txt
+pip install -r ../requirements-aula01.txt
 ```
 
 3. Execute o script de validação de ambiente:

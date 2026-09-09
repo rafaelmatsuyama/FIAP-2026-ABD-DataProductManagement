@@ -41,8 +41,10 @@
 * **Qualidade Crítica (Hard Constraints):**
   * `transaction_id`: Chave primária única, não nula.
   * `amount`: Valor numérico positivo $> 0.00$.
-  * `payment_method`: Domínio restrito a `['PIX', 'CREDIT_CARD', 'DEBIT_CARD', 'BOLETO']`.
-  * `status`: Domínio restrito a `['COMPLETED', 'PENDING', 'FAILED']`.
+  * `fee`: Taxa de liquidação $\ge 0.00$.
+  * `payment_method`: Domínio restrito a `['PIX', 'CREDIT_CARD', 'BOLETO']`.
+  * `status`: Domínio restrito a `['COMPLETED', 'FAILED']`.
+  * `created_at`: Timestamp de registro da transação.
 
 ---
 
