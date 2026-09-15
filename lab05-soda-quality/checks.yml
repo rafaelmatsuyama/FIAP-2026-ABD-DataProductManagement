@@ -1,0 +1,31 @@
+# Checks SodaCL para o Data Product de Transações Financeiras
+checks for transactions:
+  # 1. Integridade Estrutural & Volumetria
+  - row_count > 0
+  - missing_count(transaction_id) = 0
+  - duplicate_count(transaction_id) = 0
+
+  # 2. Regras de Domínio Financeiro & Limites
+  - min(amount) > 0
+  - max(amount) <= 10000
+  - missing_count(amount) = 0
+
+  # 3. Categorias e Valores Aceitos
+  - invalid_count(status) = 0:
+      valid values: ['COMPLETED', 'FAILED', 'PENDING']
+
+  - invalid_count(payment_method) = 0:
+      valid values: ['PIX', 'CREDIT_CARD', 'BOLETO']
+
+  - invalid_count(currency) = 0:
+      valid values: ['BRL', 'USD', 'EUR']
+
+  # 4. Integridade Temporal
+  - missing_count(created_at) = 0
+
+checks for customers:
+  - row_count >= 100
+  - missing_count(customer_id) = 0
+  - duplicate_count(customer_id) = 0
+  - invalid_count(customer_tier) = 0:
+      valid values: ['STANDARD', 'GOLD', 'VIP']

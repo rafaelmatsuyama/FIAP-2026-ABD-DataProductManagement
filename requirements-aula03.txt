@@ -1,6 +1,7 @@
 # MBA em Engenharia de Dados (ABD) - DPM
-# Stack da Aula 03: Quality Gates, Observabilidade & Linhagem (Labs 06 e 07)
+# Stack da Aula 03: Quality Gates, Observabilidade & Linhagem (Labs 05, 06 e 07)
 
 duckdb>=1.1.0
+setuptools>=65.0.0
 soda-core-duckdb>=3.0.0
 openlineage-python>=1.0.0

@@ -1,0 +1,3 @@
+data_source analytics:
+  type: duckdb
+  path: data/analytics.duckdb
