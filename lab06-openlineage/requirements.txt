@@ -1,0 +1,2 @@
+duckdb>=1.1.0
+openlineage-python>=1.0.0
