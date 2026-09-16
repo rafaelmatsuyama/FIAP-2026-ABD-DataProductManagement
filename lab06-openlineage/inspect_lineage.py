@@ -50,4 +50,8 @@ print("              │                 │")
 print("              └────────┬────────┘")
 print("                       ▼ (dbt_build_marts_financial)")
 print("           [fct_financial_transactions]")
+print("              ┌────────┼────────┐")
+print("              ▼        ▼        ▼")
+print("         [BI Exec]  [ML Fraud]  [BACEN]")
 print("=" * 70)
+

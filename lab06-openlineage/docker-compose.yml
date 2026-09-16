@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: marquez-db
+    network_mode: host
+    environment:
+      - POSTGRES_USER=marquez
+      - POSTGRES_PASSWORD=marquez
+      - POSTGRES_DB=marquez
+    volumes:
+      - marquez-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U marquez -d marquez"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: marquezproject/marquez:latest
+    container_name: marquez-api
+    network_mode: host
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=marquez
+      - POSTGRES_PASSWORD=marquez
+      - POSTGRES_DB=marquez
+      - MARQUEZ_PORT=5000
+      - MARQUEZ_ADMIN_PORT=5001
+      - SEARCH_ENABLED=false
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  web:
+    image: marquezproject/marquez-web:latest
+    container_name: marquez-web
+    network_mode: host
+    environment:
+      - MARQUEZ_HOST=localhost
+      - MARQUEZ_PORT=5000
+      - WEB_PORT=3000
+    depends_on:
+      - api
+    restart: on-failure
+
+volumes:
+  marquez-db-data:
