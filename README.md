@@ -35,45 +35,17 @@ This repository provides an end-to-end, production-grade **Reference Architectur
 
 ## 🏗️ End-to-End Architectural Flow
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                   UPSTREAM DOMAIN SOURCES                                   │
-│                        Operational Systems / Microservices / Logs (DuckDB)                  │
-└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
-                                               │
-                                               ▼
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 1. CONTRACT DEFINITION & SCHEMA SPECIFICATION (Labs 01 & 02)                                │
-│    • Data Product Canvas: Business Domain, Value Proposition & SLA / SLO Definition        │
-│    • OpenDataContract Standard (ODCS): datacontract.yaml with JSON Schema export            │
-│    • Breaking-Change Detection: Automated linting & schema enforcement before merge         │
-└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
-                                               │
-                                               ▼
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 2. ANALYTICS ENGINEERING & MODEL CONTRACTS (Labs 03 & 04)                                   │
-│    • dbt-duckdb Data Mesh Layers: Staging (View) ──► Intermediate ──► Marts (Table)        │
-│    • Internal Model Contracts: contract: enforced: true preventing column/type drift       │
-│    • Shift-Left Asserções: dbt build + dbt-expectations statistical test suite               │
-└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
-                                               │
-                                               ▼
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 3. SHIFT-LEFT DATA QUALITY FIREWALL (Lab 05)                                                │
-│    • Soda Core (SodaCL): Anomaly detection, null checks, freshness & value range gates     │
-│    • Circuit Breaker Engine: Halts downstream materialization upon critical check failures   │
-└──────────────────────────────────────────────┬──────────────────────────────────────────────┘
-                                               │
-                                               ▼
-┌─────────────────────────────────────────────────────────────────────────────────────────────┐
-│ 4. END-TO-END OBSERVABILITY, LINEAGE & DATA SRE (Labs 06 & 07)                              │
-│    • OpenLineage Telemetry: Event emission with SchemaDatasetFacet & ErrorMessageRunFacet    │
-│    • Marquez Server & UI: Complete DAG lineage graph from ingestion to consumption          │
-│    • Dynamic Blast Radius: Bipartite Graph BFS algorithm to identify impacted consumers     │
-│    • Data SRE & Reliability: Availability SLI, MTTD, MTTR, Monthly Error Budget Audit       │
-│    • Automated Governance: Automatic issuance of DEPLOY_FREEZE.md & Reliability Reports     │
-└─────────────────────────────────────────────────────────────────────────────────────────────┘
-```
+![End-to-End Data Product Management & Observability Flow](assets/architectural_flow.jpg)
+
+### Lifecycle Architecture Matrix
+
+| Stage | Architectural Phase | Domain Responsibility & Core Actions | Standards & Technology Stack | Production Guarantees & Deliverables |
+| :---: | :--- | :--- | :--- | :--- |
+| **0** | **Upstream Domain Sources** | Operational transactional systems emitting raw domain events and financial transactions. | DuckDB, Parquet Storage, Event Logs | Immutable raw datasets (`transactions.parquet`, `customers`) |
+| **1** | **Contract Definition & Schema Spec** (Labs 01 & 02) | Collaborative interface design between data producers, domain consumers, and data product managers. | OpenDataContract Standard (ODCS), JSON Schema, Data Product Canvas | Machine-readable `datacontract.yaml`, `schema_spec.json`, and automated CI/CD breaking-change linter |
+| **2** | **Analytics Engineering & Model Contracts** (Labs 03 & 04) | Declarative dimensional modeling across medaillon layers (Staging $\rightarrow$ Intermediate $\rightarrow$ Marts). | `dbt-core`, `dbt-duckdb`, `dbt-expectations` | Enforced SQL model contracts (`contract: enforced: true`) and shift-left statistical assertions |
+| **3** | **Shift-Left Data Quality Firewall** (Lab 05) | Ingestion-boundary validation acting as a declarative quality gate and automated Circuit Breaker. | Soda Core, SodaCL (Soda Check Language) | Zero-defect warehouse ingestion; automated pipeline halt on negative values, nulls, or invalid enums |
+| **4** | **Lineage, Observability & Data SRE** (Labs 06 & 07) | Continuous emission of operational run and dataset facets, DAG topology capture, and reliability auditing. | OpenLineage SDK, Marquez Server (Docker), REST API | Interactive dependency DAG, dynamic BFS Blast Radius calculator, Availability SLI, and automated `DEPLOY_FREEZE.md` |
 
 ---
 
@@ -81,16 +53,16 @@ This repository provides an end-to-end, production-grade **Reference Architectur
 
 The repository is divided into 8 self-contained, sequential hands-on laboratories. Each module solves a concrete enterprise engineering problem:
 
-| Module | Enterprise Pain Point | Technical Solution & Modern Stack | Key Deliverable & Artifact |
-| :--- | :--- | :--- | :--- |
-| [`lab00-setup`](./lab00-setup) | Environment inconsistency and local dependency conflicts | GitHub Codespaces (DevContainer) + Self-Healing DuckDB | Reproducible ephemeral runtime & transactional data generator |
-| [`lab01-canvas`](./lab01-canvas) | Lack of product thinking and undefined interfaces | Data Product Canvas + JSON Schema Specification | Domain value mapping & schema contract validation engine |
-| [`lab02-contracts`](./lab02-contracts) | Upstream producers introducing breaking schema drifts | OpenDataContract Standard (ODCS) + `datacontract-cli` | Versioned `datacontract.yaml` & breaking-change test suite |
-| [`lab03-dbt-modeling`](./lab03-dbt-modeling) | Monolithic SQL transformations without schema guarantees | `dbt-core` + `dbt-duckdb` with Model Contracts | Enforced model contracts (`contract: enforced: true`) |
-| [`lab04-dbt-testing`](./lab04-dbt-testing) | Silent data corruption slipping past basic SQL tests | `dbt-expectations` (`metaplane`) + unified `dbt build` | Shift-left testing pyramid & distribution assertions |
-| [`lab05-soda-quality`](./lab05-soda-quality) | Corrupt data contaminating production warehouse | `Soda Core` (SodaCL) Quality Gates & Circuit Breakers | Edge quality firewall with automated anomaly quarantine |
-| [`lab06-openlineage`](./lab06-openlineage) | Unknown blast radius when modifying upstream tables | `OpenLineage` + `Marquez` (Docker) + Dynamic BFS Graph | Automated lineage telemetry & downstream blast radius calculator |
-| [`lab07-downtime-incident`](./lab07-downtime-incident) | Unmeasured data downtime and SLA/SLO violations | Marquez REST API + SRE Reliability & Error Budget Engine | Automated `DEPLOY_FREEZE.md` policy & incident audit report |
+| Module | Guides / Roteiros | Enterprise Pain Point | Technical Solution & Modern Stack | Key Deliverable & Artifact |
+| :--- | :--- | :--- | :--- | :--- |
+| [`lab00-setup`](./lab00-setup) | [🇧🇷 PT-BR](./lab00-setup/Lab%2000%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab00-setup/Lab%2000%20-%20Student%20Guide.md) | Environment inconsistency and local dependency conflicts | GitHub Codespaces (DevContainer) + Self-Healing DuckDB | Reproducible ephemeral runtime & transactional data generator |
+| [`lab01-canvas`](./lab01-canvas) | [🇧🇷 PT-BR](./lab01-canvas/Lab%2001%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab01-canvas/Lab%2001%20-%20Student%20Guide.md) | Lack of product thinking and undefined interfaces | Data Product Canvas + JSON Schema Specification | Domain value mapping & schema contract validation engine |
+| [`lab02-contracts`](./lab02-contracts) | [🇧🇷 PT-BR](./lab02-contracts/Lab%2002%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab02-contracts/Lab%2002%20-%20Student%20Guide.md) | Upstream producers introducing breaking schema drifts | OpenDataContract Standard (ODCS) + `datacontract-cli` | Versioned `datacontract.yaml` & breaking-change test suite |
+| [`lab03-dbt-modeling`](./lab03-dbt-modeling) | [🇧🇷 PT-BR](./lab03-dbt-modeling/Lab%2003%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab03-dbt-modeling/Lab%2003%20-%20Student%20Guide.md) | Monolithic SQL transformations without schema guarantees | `dbt-core` + `dbt-duckdb` with Model Contracts | Enforced model contracts (`contract: enforced: true`) |
+| [`lab04-dbt-testing`](./lab04-dbt-testing) | [🇧🇷 PT-BR](./lab04-dbt-testing/Lab%2004%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab04-dbt-testing/Lab%2004%20-%20Student%20Guide.md) | Silent data corruption slipping past basic SQL tests | `dbt-expectations` (`metaplane`) + unified `dbt build` | Shift-left testing pyramid & distribution assertions |
+| [`lab05-soda-quality`](./lab05-soda-quality) | [🇧🇷 PT-BR](./lab05-soda-quality/Lab%2005%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab05-soda-quality/Lab%2005%20-%20Student%20Guide.md) | Corrupt data contaminating production warehouse | `Soda Core` (SodaCL) Quality Gates & Circuit Breakers | Edge quality firewall with automated anomaly quarantine |
+| [`lab06-openlineage`](./lab06-openlineage) | [🇧🇷 PT-BR](./lab06-openlineage/Lab%2006%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab06-openlineage/Lab%2006%20-%20Student%20Guide.md) | Unknown blast radius when modifying upstream tables | `OpenLineage` + `Marquez` (Docker) + Dynamic BFS Graph | Automated lineage telemetry & downstream blast radius calculator |
+| [`lab07-downtime-incident`](./lab07-downtime-incident) | [🇧🇷 PT-BR](./lab07-downtime-incident/Lab%2007%20-%20Roteiro%20Aluno.md) \| [🇺🇸 EN](./lab07-downtime-incident/Lab%2007%20-%20Student%20Guide.md) | Unmeasured data downtime and SLA/SLO violations | Marquez REST API + SRE Reliability & Error Budget Engine | Automated `DEPLOY_FREEZE.md` policy & incident audit report |
 
 ---
 
@@ -110,8 +82,9 @@ pip install -r requirements-aula01.txt
 # 2. Navigate to the desired laboratory
 cd lab01-canvas
 
-# 3. Follow the guided instructions in the student manual
-cat "Lab 01 - Roteiro Aluno.md"
+# 3. Follow the guided instructions in your preferred language
+cat "Lab 01 - Student Guide.md"       # 🇺🇸 English Guide
+# or: cat "Lab 01 - Roteiro Aluno.md"   # 🇧🇷 Portuguese Guide
 ```
 
 ### Option B: Local Machine Execution
@@ -156,6 +129,27 @@ This reference implementation incorporates critical real-world architectural sol
 This framework and interactive lab suite were architected, refined, and battle-tested by **Rafael Matsuyama** as part of the **Data Product Management & Value Delivery** curriculum for the **Executive MBA in Data Engineering at FIAP** (São Paulo, Brazil).
 
 Over 100+ senior data engineers, solutions architects, and tech leads across multiple enterprise cohorts have stress-tested these scenarios, providing continuous feedback to ensure these patterns solve real-world corporate data delivery challenges.
+
+---
+
+## 🏷️ Release Cadence & Versioning Policy
+
+This repository follows a tailored **Calendar Versioning with Cycle and Patch semantics (CalVer)** (`vYYYY.CYCLE.PATCH`) to balance enterprise technical stability with annual executive curriculum delivery:
+
+```
+  v2026 . 1 . 0
+    │     │   │
+    │     │   └── PATCH: Hotfixes, dependency bumps & documentation errata
+    │     └────── CYCLE: Major content iterations or new lab modules (e.g., Lab 08)
+    └──────────── YEAR:  Annual technology stack baseline & MBA curriculum edition
+```
+
+* **Deterministic Reproducibility:** Each tagged release provides an immutable snapshot where all laboratories, Codespaces DevContainers, and modular `requirements-*.txt` manifests are tested and guaranteed to execute deterministically without runtime drift.
+* **Academic Cohort Pinning:** Students from specific cohort years or corporate teams standardizing on past editions can pin their local or codespaces environment directly:
+  ```bash
+  git checkout tags/v2026.1.0
+  ```
+* All milestone releases and automated release notes are available on the official [GitHub Releases](https://github.com/rafaelmatsuyama/FIAP-ABD-DataProductManagement/releases) page.
 
 ---
 
