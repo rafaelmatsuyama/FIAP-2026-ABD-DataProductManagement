@@ -3,9 +3,9 @@ version: 2
 sources:
   - name: raw_sources
     schema: main
-    description: "Fontes brutas ingeridas na base analytics.duckdb."
+    description: "Raw ingested source tables in analytics.duckdb."
     tables:
       - name: transactions
-        description: "Eventos brutos de transações financeiras."
+        description: "Raw financial transaction events."
       - name: customers
-        description: "Cadastro bruto de clientes."
+        description: "Raw registered customer records."

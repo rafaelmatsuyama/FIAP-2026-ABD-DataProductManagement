@@ -57,7 +57,7 @@ cd lab04-dbt-testing
 ```
 
 > [!NOTE]
-> Todos os comandos deste laboratório devem ser executados a partir de `labs/lab04-dbt-testing`.
+> Todos os comandos deste laboratório devem ser executados a partir de `lab04-dbt-testing`.
 
 ---
 
@@ -69,13 +69,15 @@ Caso esteja em um ambiente novo, garanta a presença do dbt com adaptador DuckDB
 pip install -r requirements.txt
 ```
 
-*(Se já tiver instalado no Lab 03, o pip confirmará que tudo já está satisfeito em segundos).*
+* **Duração:** ~15 segundos.
+* **O que acontece:** O `pip` instala o `dbt-duckdb` e o pacote `duckdb`.
+* *(Caso já tenha os pacotes instalados da aula anterior, o pip apenas confirmará que os requisitos já foram satisfeitos).*
 
 ---
 
-### Passo 3: Inicialização da Base Analítica com Clientes e Transações
+### Passo 3: Inicialização das Tabelas no DuckDB
 
-Execute o script de preparação para criar a base `analytics.duckdb` abastecida tanto com as **transações financeiras** quanto com a **tabela de clientes** (necessária para os testes relacionais):
+Execute o script de preparação para criar a base com as tabelas `transactions` e `customers`:
 
 ```bash
 python setup_duckdb.py
@@ -83,9 +85,9 @@ python setup_duckdb.py
 
 *Saída Esperada:*
 ```text
-Tabela transactions inicializada com 1000 registros.
-Tabela customers criada com 100 clientes cadastrados.
-Setup da base analytics.duckdb concluido com sucesso!
+[OK] Table 'transactions' initialized with 1000 records.
+[OK] Table 'customers' created with 100 registered customers.
+[OK] Database analytics.duckdb setup completed successfully!
 ```
 
 ---
@@ -247,7 +249,7 @@ Para certificar que sua esteira de qualidade está operando com perfeição:
 
 ## 🧹 Cleanup
 
-Ao concluir as atividades, retorne ao diretório raiz dos laboratórios:
+Ao concluir as atividades, retorne ao diretório raiz do repositório:
 
 ```bash
 cd ..

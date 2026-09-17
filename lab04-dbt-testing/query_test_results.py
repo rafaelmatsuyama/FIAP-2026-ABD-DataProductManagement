@@ -4,27 +4,27 @@ import duckdb
 db_path = Path("data/analytics.duckdb")
 
 if not db_path.exists():
-    print("Erro: Base analytics.duckdb nao encontrada. Execute 'python setup_duckdb.py' e 'dbt build'.")
+    print("[ERROR] Database analytics.duckdb not found. Run 'python setup_duckdb.py' and 'dbt build'.")
     exit(1)
 
 con = duckdb.connect(str(db_path))
 
 print("\n=======================================================")
-print("🧪 INSPEÇÃO DE QUALIDADE: TABELAS E DATA PRODUCTS")
+print("🧪 QUALITY INSPECTION: TABLES & DATA PRODUCTS")
 print("=======================================================\n")
 
 tables = con.execute("SHOW TABLES;").fetchall()
 table_names = [t[0] for t in tables]
-print(f"Tabelas ativas no DuckDB: {table_names}\n")
+print(f"Active tables in DuckDB: {table_names}\n")
 
 if "fct_financial_transactions" in table_names and "dim_customers" in table_names:
     tx_count = con.execute("SELECT COUNT(*) FROM fct_financial_transactions;").fetchone()[0]
     cust_count = con.execute("SELECT COUNT(*) FROM dim_customers;").fetchone()[0]
     
-    print(f"✅ Dimensão Clientes: {cust_count:,} registros ativos.")
-    print(f"✅ Fato Transações Liquidadas: {tx_count:,} registros validados.")
+    print(f"✅ Customers Dimension: {cust_count:,} active records.")
+    print(f"✅ Settled Transactions Fact: {tx_count:,} validated records.")
     
-    # Validação de integridade referencial manual
+    # Manual referential integrity check
     orphans = con.execute("""
         SELECT COUNT(*) 
         FROM fct_financial_transactions f
@@ -32,13 +32,13 @@ if "fct_financial_transactions" in table_names and "dim_customers" in table_name
         WHERE c.customer_id IS NULL;
     """).fetchone()[0]
     
-    print(f"🔍 Registros órfãos (Violações de Integridade Referencial): {orphans}")
+    print(f"🔍 Orphan records (Referential Integrity Violations): {orphans}")
     
-    # Checagem de valores negativos
+    # Check negative amounts
     negatives = con.execute("SELECT COUNT(*) FROM fct_financial_transactions WHERE net_amount < 0;").fetchone()[0]
-    print(f"🔍 Transações com valor líquido negativo: {negatives}\n")
+    print(f"🔍 Transactions with negative net amount: {negatives}\n")
     
-    print("Amostra do join entre Fato e Dimensão:")
+    print("Sample join between Fact and Dimension:")
     con.sql("""
         SELECT 
             f.transaction_id,
@@ -53,6 +53,6 @@ if "fct_financial_transactions" in table_names and "dim_customers" in table_name
         LIMIT 5;
     """).show()
 else:
-    print("Marts analíticos ainda não materializados. Execute 'dbt build --profiles-dir .'.")
+    print("Analytical marts not yet materialized. Run 'dbt build --profiles-dir .'.")
 
 con.close()

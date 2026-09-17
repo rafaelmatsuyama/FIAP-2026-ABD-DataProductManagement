@@ -1,5 +1,5 @@
--- Teste Singular: Garante que nenhuma transacao liquidada possua valor liquido negativo
--- Regra de Negocio: O valor liquido (net_amount) deve ser estritamente >= 0
+-- Singular Test: Ensures no settled transaction has a negative net amount
+-- Business Rule: Net amount (net_amount) must be strictly >= 0
 select
     transaction_id,
     amount,
