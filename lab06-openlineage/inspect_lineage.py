@@ -4,21 +4,21 @@ from pathlib import Path
 events_file = Path("lineage_events.json")
 
 if not events_file.exists():
-    print("[ERRO] Arquivo lineage_events.json nao encontrado. Execute 'python emit_lineage_events.py' primeiro.")
+    print("[ERROR] File lineage_events.json not found. Run 'python emit_lineage_events.py' first.")
     exit(1)
 
 with open(events_file, "r", encoding="utf-8") as f:
     events = json.load(f)
 
 print("=" * 70)
-print("📊 CATALOGO OPERACIONAL DE LINHAGEM (OPENLINEAGE STANDARD)")
+print("📊 OPERATIONAL LINEAGE CATALOG (OPENLINEAGE STANDARD)")
 print("=" * 70)
 
 complete_events = [e for e in events if e.get("eventType") == "COMPLETE"]
 
-print(f"\n[+] Total de Eventos de Ciclo de Vida: {len(events)} ({len(complete_events)} Jobs Concluídos)")
+print(f"\n[+] Total Lifecycle Events: {len(events)} ({len(complete_events)} Completed Jobs)")
 print("\n" + "-" * 70)
-print("🔗 GRAFO DE LINHAGEM OPERACIONAL (DAG)")
+print("🔗 OPERATIONAL LINEAGE GRAPH (DAG)")
 print("-" * 70)
 
 for idx, e in enumerate(complete_events, 1):
@@ -30,7 +30,7 @@ for idx, e in enumerate(complete_events, 1):
     print(f"  ├─ INPUTS:  {', '.join(inputs)}")
     print(f"  └─ OUTPUTS: {', '.join(outputs)}")
     
-    # Inspecionar Facets se existirem
+    # Inspect Facets if present
     for out in e.get("outputs", []):
         facets = out.get("facets", {})
         if "schema" in facets:
@@ -41,7 +41,7 @@ for idx, e in enumerate(complete_events, 1):
             print(f"     └─ Quality Facet: rowCount={dq.get('rowCount')}, producer={dq.get('_producer')}")
 
 print("\n" + "=" * 70)
-print("🔍 REPRESENTAÇÃO SIMPLIFICADA DO FLUXO END-TO-END:")
+print("🔍 SIMPLIFIED END-TO-END FLOW REPRESENTATION:")
 print("   [raw/transactions.parquet]")
 print("              │")
 print("              ▼ (job_ingestion_raw_to_staging)")

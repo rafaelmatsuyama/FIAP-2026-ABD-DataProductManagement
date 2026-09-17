@@ -1,5 +1,5 @@
-# Configuração de Transporte do OpenLineage SDK
-# Por padrão, envia eventos via HTTP para o Marquez Server (porta 5000)
+# OpenLineage SDK Transport Configuration
+# By default, emits events via HTTP to Marquez Server (port 5000)
 transport:
   type: http
   url: http://localhost:5000

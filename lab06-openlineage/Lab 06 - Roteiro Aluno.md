@@ -75,7 +75,7 @@ python setup_duckdb.py
 
 **Saída esperada:**
 ```text
-[OK] Pipeline analitico completo preparado: transactions (1000) -> fct_financial_transactions (1000).
+[OK] Complete analytical pipeline prepared: transactions (1000) -> fct_financial_transactions (1000).
 ```
 
 ---
@@ -137,27 +137,27 @@ python emit_lineage_events.py
 **Saída esperada:**
 ```text
 ======================================================================
-📡 INSTRUMENTAÇÃO DE LINHAGEM COM OPENLINEAGE PYTHON SDK
+📡 LINEAGE INSTRUMENTATION WITH OPENLINEAGE PYTHON SDK
 ======================================================================
 
-[*] Inspecionando catálogo de tabelas analíticas no DuckDB...
-  ├─ Tabela raw/transactions: 8 colunas
-  ├─ Tabela staging/stg_transactions: 8 colunas
-  ├─ Dimensão/dim_customers: 6 colunas
-  └─ Data Mart/fct_financial_transactions: 10 colunas (1000 registros)
+[*] Inspecting analytical table catalog in DuckDB...
+  ├─ Table raw/transactions: 8 columns
+  ├─ Table staging/stg_transactions: 8 columns
+  ├─ Dimension/dim_customers: 5 columns
+  └─ Data Mart/fct_financial_transactions: 10 columns (1000 records)
 
-[*] Inicializando OpenLineageClient...
-  └─ [OK] Cliente configurado via openlineage.yml (Target: http://localhost:5000)
+[*] Initializing OpenLineageClient...
+  └─ [OK] Client configured via openlineage.yml (Target: http://localhost:5000)
 
-[Step 1] Emitindo eventos de linhagem para 'job_ingestion_raw_to_staging'...
+[Step 1] Emitting lineage events for 'job_ingestion_raw_to_staging'...
   🚀 [EMIT -> MARQUEZ] Job='job_ingestion_raw_to_staging' | RunState=START
   🚀 [EMIT -> MARQUEZ] Job='job_ingestion_raw_to_staging' | RunState=COMPLETE
 
-[Step 2] Emitindo eventos de linhagem para 'dbt_build_marts_financial'...
+[Step 2] Emitting lineage events for 'dbt_build_marts_financial'...
   🚀 [EMIT -> MARQUEZ] Job='dbt_build_marts_financial' | RunState=START
   🚀 [EMIT -> MARQUEZ] Job='dbt_build_marts_financial' | RunState=COMPLETE
 
-[Step 3] Emitindo eventos para consumidores downstream do Data Mart...
+[Step 3] Emitting events for Data Mart downstream consumers...
   🚀 [EMIT -> MARQUEZ] Job='job_bi_executive_dashboard' | RunState=START
   🚀 [EMIT -> MARQUEZ] Job='job_bi_executive_dashboard' | RunState=COMPLETE
   🚀 [EMIT -> MARQUEZ] Job='job_ml_fraud_feature_store' | RunState=START
@@ -166,9 +166,9 @@ python emit_lineage_events.py
   🚀 [EMIT -> MARQUEZ] Job='job_bacen_regulatory_export' | RunState=COMPLETE
 
 ======================================================================
-✅ SUCESSO: 10 eventos OpenLineage processados e salvos em 'lineage_events.json'.
-🌐 Metadados sincronizados ao vivo no Marquez!
-   Acesse a UI web em: http://localhost:3000 (Namespace: fiap.mba.dpm)
+✅ SUCCESS: 10 OpenLineage events processed and saved to 'lineage_events.json'.
+🌐 Metadata synchronized live in Marquez!
+   Access the web UI at: http://localhost:3000 (Namespace: fiap.mba.dpm)
 ======================================================================
 ```
 
@@ -240,7 +240,7 @@ Para considerar o Lab 06 concluído com êxito:
 
 ## 🧹 Cleanup
 
-Retorne para a raiz dos laboratórios:
+Retorne para o diretório raiz do repositório:
 
 ```bash
 cd ..

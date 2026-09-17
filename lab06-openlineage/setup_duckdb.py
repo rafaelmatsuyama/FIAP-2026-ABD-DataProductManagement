@@ -7,7 +7,7 @@ data_dir.mkdir(parents=True, exist_ok=True)
 db_path = data_dir / "analytics.duckdb"
 parquet_path = data_dir / "transactions.parquet"
 
-# 1. Buscar o arquivo transactions.parquet dos labs anteriores se nao existir localmente
+# 1. Look for transactions.parquet from previous labs if not present locally
 if not parquet_path.exists():
     possible_sources = [
         Path("../lab05-soda-quality/data/transactions.parquet"),
@@ -19,12 +19,12 @@ if not parquet_path.exists():
     for src in possible_sources:
         if src.exists():
             shutil.copy2(src, parquet_path)
-            print(f"Copiado transactions.parquet de {src}")
+            print(f"Copied transactions.parquet from {src}")
             break
 
-# 2. Se nao existir, gerar dataset canonico na hora (Self-Healing)
+# 2. If not found, generate canonical dataset on the fly (Self-Healing)
 if not parquet_path.exists():
-    print("[*] Dataset base nao encontrado. Gerando dados sinteticos canonicos (Self-Healing)...")
+    print("[*] Base dataset not found. Generating canonical synthetic data (Self-Healing)...")
     mem_con = duckdb.connect()
     mem_con.execute(f"""
         CREATE TABLE raw_transactions AS
@@ -52,26 +52,26 @@ if not parquet_path.exists():
         COPY raw_transactions TO '{parquet_path.as_posix()}' (FORMAT PARQUET);
     """)
     mem_con.close()
-    print(f"[OK] Arquivo '{parquet_path}' gerado com sucesso!")
+    print(f"[OK] File '{parquet_path}' successfully generated!")
 
 con = duckdb.connect(str(db_path))
 
-# 1. Tabela transactions
+# 1. Table transactions
 con.execute(f"CREATE OR REPLACE TABLE transactions AS SELECT * FROM '{parquet_path.as_posix()}';")
 
-# 2. Tabela customers
+# 2. Table customers
 con.execute("""
     CREATE OR REPLACE TABLE customers AS
     SELECT 
         'CUST_' || LPAD(i::VARCHAR, 4, '0') AS customer_id,
-        'Cliente ' || i::VARCHAR AS customer_name,
+        'Customer ' || i::VARCHAR AS customer_name,
         CASE WHEN i % 4 = 0 THEN 'VIP' WHEN i % 4 = 1 THEN 'GOLD' ELSE 'STANDARD' END AS customer_tier,
         'BR' AS country_code,
         DATE '2025-01-01' + INTERVAL (i * 3) DAY AS signup_date
     FROM generate_series(1, 100) t(i);
 """)
 
-# 3. Modelos analiticos de downstream para demonstracao de linhagem
+# 3. Downstream analytical models for lineage demonstration
 con.execute("""
     CREATE OR REPLACE TABLE stg_transactions AS
     SELECT 
@@ -114,4 +114,4 @@ tx_count = con.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
 fct_count = con.execute("SELECT COUNT(*) FROM fct_financial_transactions").fetchone()[0]
 con.close()
 
-print(f"[OK] Pipeline analitico completo preparado: transactions ({tx_count}) -> fct_financial_transactions ({fct_count}).")
+print(f"[OK] Complete analytical pipeline prepared: transactions ({tx_count}) -> fct_financial_transactions ({fct_count}).")

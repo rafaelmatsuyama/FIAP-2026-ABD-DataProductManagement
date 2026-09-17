@@ -28,16 +28,16 @@ DB_PATH = Path("data/analytics.duckdb")
 
 def main():
     if not DB_PATH.exists():
-        print("[ERRO] Banco data/analytics.duckdb nao encontrado.")
-        print("       Execute 'python setup_duckdb.py' antes de emitir a linhagem.")
+        print("[ERROR] Database data/analytics.duckdb not found.")
+        print("       Run 'python setup_duckdb.py' before emitting lineage.")
         return
 
     print("=" * 70)
-    print("📡 INSTRUMENTAÇÃO DE LINHAGEM COM OPENLINEAGE PYTHON SDK")
+    print("📡 LINEAGE INSTRUMENTATION WITH OPENLINEAGE PYTHON SDK")
     print("=" * 70)
 
-    # 1. Conexão ao DuckDB para inspecionar o catálogo de dados real
-    print("\n[*] Inspecionando catálogo de tabelas analíticas no DuckDB...")
+    # 1. Connect to DuckDB to inspect the real data catalog
+    print("\n[*] Inspecting analytical table catalog in DuckDB...")
     con = duckdb.connect(str(DB_PATH))
 
     def extract_schema_facet(table_name):
@@ -51,19 +51,19 @@ def main():
     fct_count = con.execute("SELECT COUNT(*) FROM fct_financial_transactions;").fetchone()[0]
     con.close()
 
-    print(f"  ├─ Tabela raw/transactions: {len(raw_schema.fields)} colunas")
-    print(f"  ├─ Tabela staging/stg_transactions: {len(stg_schema.fields)} colunas")
-    print(f"  ├─ Dimensão/dim_customers: {len(dim_schema.fields)} colunas")
-    print(f"  └─ Data Mart/fct_financial_transactions: {len(fct_schema.fields)} colunas ({fct_count} registros)")
+    print(f"  ├─ Table raw/transactions: {len(raw_schema.fields)} columns")
+    print(f"  ├─ Table staging/stg_transactions: {len(stg_schema.fields)} columns")
+    print(f"  ├─ Dimension/dim_customers: {len(dim_schema.fields)} columns")
+    print(f"  └─ Data Mart/fct_financial_transactions: {len(fct_schema.fields)} columns ({fct_count} records)")
 
-    # 2. Inicialização do OpenLineageClient (lê automaticamente openlineage.yml)
-    print("\n[*] Inicializando OpenLineageClient...")
+    # 2. Initialize OpenLineageClient (automatically reads openlineage.yml)
+    print("\n[*] Initializing OpenLineageClient...")
     try:
         client = OpenLineageClient()
-        print("  └─ [OK] Cliente configurado via openlineage.yml (Target: http://localhost:5000)")
+        print("  └─ [OK] Client configured via openlineage.yml (Target: http://localhost:5000)")
     except Exception as e:
         client = OpenLineageClient(url="http://localhost:5000")
-        print(f"  └─ [INFO] Cliente inicializado com fallback direto: {e}")
+        print(f"  └─ [INFO] Client initialized with direct fallback: {e}")
 
     now_iso = datetime.now(timezone.utc).isoformat()
     events = []
@@ -79,13 +79,13 @@ def main():
                 print(f"  🚀 [EMIT -> MARQUEZ] Job='{event.job.name}' | RunState={state_str}")
             except Exception as e:
                 marquez_available = False
-                print(f"  ⚠️  [AVISO] Falha ao emitir para Marquez (http://localhost:5000): {e}")
-                print("            O script prosseguirá serializando os eventos localmente via Serde oficial.")
+                print(f"  ⚠️  [WARNING] Failed to emit to Marquez (http://localhost:5000): {e}")
+                print("            The script will proceed serializing events locally via official Serde.")
 
     # ==============================================================================
-    # Pipeline Step 1: Ingestão Raw -> Staging
+    # Pipeline Step 1: Raw -> Staging Ingestion
     # ==============================================================================
-    print("\n[Step 1] Emitindo eventos de linhagem para 'job_ingestion_raw_to_staging'...")
+    print("\n[Step 1] Emitting lineage events for 'job_ingestion_raw_to_staging'...")
     job_ingest = Job(namespace=NAMESPACE, name="job_ingestion_raw_to_staging")
     run_ingest = Run(
         runId=str(uuid.uuid4()),
@@ -126,9 +126,9 @@ def main():
     ))
 
     # ==============================================================================
-    # Pipeline Step 2: Transformação Analítica dbt (Staging + Dim -> Data Mart)
+    # Pipeline Step 2: dbt Analytical Transformation (Staging + Dim -> Data Mart)
     # ==============================================================================
-    print("\n[Step 2] Emitindo eventos de linhagem para 'dbt_build_marts_financial'...")
+    print("\n[Step 2] Emitting lineage events for 'dbt_build_marts_financial'...")
     job_dbt = Job(namespace=NAMESPACE, name="dbt_build_marts_financial")
     run_dbt = Run(
         runId=str(uuid.uuid4()),
@@ -183,9 +183,9 @@ def main():
     ))
 
     # ==============================================================================
-    # Pipeline Step 3: Consumidores Analíticos Downstream (Data Products)
+    # Pipeline Step 3: Downstream Analytical Consumers (Data Products)
     # ==============================================================================
-    print("\n[Step 3] Emitindo eventos para consumidores downstream do Data Mart...")
+    print("\n[Step 3] Emitting events for Data Mart downstream consumers...")
     input_fct_consumer = InputDataset(
         namespace="duckdb://analytics/marts",
         name="fct_financial_transactions",
@@ -256,21 +256,21 @@ def main():
         ))
 
     # ==============================================================================
-    # 4. Persistência Local via Serde Oficial do OpenLineage
+    # 4. Local Persistence via Official OpenLineage Serde
     # ==============================================================================
     serialized_events = [json.loads(Serde.to_json(e)) for e in events]
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(serialized_events, f, indent=2)
 
     print("\n" + "=" * 70)
-    print(f"✅ SUCESSO: {len(events)} eventos OpenLineage processados e salvos em '{OUTPUT_FILE}'.")
+    print(f"✅ SUCCESS: {len(events)} OpenLineage events processed and saved to '{OUTPUT_FILE}'.")
     if marquez_available:
-        print("🌐 Metadados sincronizados ao vivo no Marquez!")
-        print("   Acesse a UI web em: http://localhost:3000 (Namespace: fiap.mba.dpm)")
+        print("🌐 Metadata synchronized live in Marquez!")
+        print("   Access the web UI at: http://localhost:3000 (Namespace: fiap.mba.dpm)")
     else:
-        print("💡 Dica: Para visualizar na UI gráfica do Marquez, suba o ambiente com:")
+        print("💡 Tip: To view in the Marquez web UI, start the environment with:")
         print("   docker compose up -d")
-        print("   e reexecute este script!")
+        print("   and re-run this script!")
     print("=" * 70)
 
 if __name__ == "__main__":
