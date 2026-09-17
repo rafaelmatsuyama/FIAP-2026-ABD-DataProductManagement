@@ -53,10 +53,10 @@ def generate_transactions(num_records: int = 1000) -> None:
 
     # Get count and sample
     count = conn.execute("SELECT COUNT(*) FROM raw_transactions;").fetchone()[0]
-    print(f"[OK] Gerado com sucesso: '{parquet_path}' ({count} registros).")
+    print(f"[OK] Successfully generated: '{parquet_path}' ({count} records).")
 
     # Show quick preview
-    print("\nPreview dos primeiros 3 registros:")
+    print("\nPreview of first 3 records:")
     preview = conn.execute("SELECT * FROM raw_transactions LIMIT 3;").df()
     print(preview.to_string(index=False))
 

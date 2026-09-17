@@ -1,74 +1,74 @@
-# Lab 00 - Setup Express & Validação de Ambiente
+# Lab 00 - Express Setup & Environment Validation
 
-**Curso / Disciplina:** MBA em Engenharia de Dados (ABD) — Data Product Management & Value Delivery (DPM)  
-**Ambiente:** GitHub Codespaces (Linux DevContainer) ou Local (Python 3.11+)  
-**Linguagem / Stack:** Python 3.11+ / DuckDB / datacontract-cli / pip  
-**Duração Estimada:** 10 a 15 minutos  
-
----
-
-## 🎯 Objetivo do Lab
-
-O objetivo deste laboratório inicial é garantir a **padronização e prontidão técnica** de todo o ambiente de desenvolvimento antes do início dos exercícios práticos de *Data Products*, *Data Contracts* e *Observabilidade*.
-
-Ao final deste laboratório, você será capaz de:
-1. Inicializar uma sessão reprodutível no **GitHub Codespaces** ou em ambiente local.
-2. Instalar o stack da **Aula 01** em segundos utilizando o gerenciador **`pip`**.
-3. Validar a instalação e operabilidade das ferramentas essenciais (`duckdb`, `datacontract-cli`, `pyarrow`).
-4. Executar consultas analíticas OLAP locais via **DuckDB** sobre arquivos colunares Parquet (`transactions.parquet`).
+**Course / Track:** MBA in Data Engineering (ABD) — Data Product Management & Value Delivery (DPM)  
+**Environment:** GitHub Codespaces (Linux DevContainer) or Local (Python 3.11+)  
+**Language / Stack:** Python 3.11+ / DuckDB / datacontract-cli / pip  
+**Estimated Duration:** 10 to 15 minutes  
 
 ---
 
-## 📋 Pré-requisitos & Materiais
+## 🎯 Lab Objectives
 
-* Acesso à internet e conta ativa no **GitHub** com permissões no repositório da disciplina.
-* Navegador moderno (Google Chrome, Firefox ou Microsoft Edge) para operar o Codespaces no browser.
-* *(Opcional para execução local)*: Python 3.11 ou superior instalado e gerenciador de pacotes (`pip`).
+The goal of this foundational lab is to guarantee **standardization and technical readiness** across the development environment before embarking on the hands-on exercises covering *Data Products*, *Data Contracts*, and *Data Observability*.
+
+By the end of this lab, you will be able to:
+1. Initialize a reproducible development session in **GitHub Codespaces** or a local virtual environment.
+2. Install the **Session 01** dependencies in seconds using **`pip`**.
+3. Validate the installation and runtime health of core tools (`duckdb`, `datacontract-cli`, `pyarrow`).
+4. Execute in-memory local OLAP queries using **DuckDB** directly against columnar Parquet files (`transactions.parquet`).
 
 ---
 
-## 🚀 Passo a Passo Guiado
+## 📋 Prerequisites & Materials
 
-### Passo 1: Inicialização do Ambiente no GitHub Codespaces
+* Internet access and an active **GitHub** account with access to the course repository.
+* A modern web browser (Google Chrome, Firefox, or Microsoft Edge) to run Codespaces in-browser.
+* *(Optional for local execution)*: Python 3.11 or higher installed along with package manager (`pip`).
 
-1. Acesse a página do repositório oficial da disciplina no GitHub.
-2. Clique no botão verde **Code** $\rightarrow$ selecione a aba **Codespaces** $\rightarrow$ clique em **Create codespace on main**.
-3. Aguarde o provisionamento do container. O DevContainer já vem pré-configurado com as extensões do VS Code, Python e ferramentas de CLI.
+---
 
-> 💡 **Nota para execução Local:** Se preferir rodar em sua máquina, clone o repositório, crie um ambiente virtual e instale os requisitos:
+## 🚀 Step-by-Step Guide
+
+### Step 1: Initialize Environment in GitHub Codespaces
+
+1. Navigate to the official repository page on GitHub.
+2. Click the green **Code** button $\rightarrow$ select the **Codespaces** tab $\rightarrow$ click **Create codespace on main**.
+3. Wait for the container provisioning to complete. The DevContainer comes pre-configured with Python runtime, VS Code extensions, and CLI developer tools.
+
+> 💡 **Local Execution Note:** If running locally on your machine, clone the repository, create a virtual environment, and activate it:
 > ```bash
-> # Criar ambiente virtual
+> # Create virtual environment
 > python -m venv .venv
-> source .venv/bin/activate  # No Windows: .venv\Scripts\activate
+> source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 > ```
 
 ---
 
-### Passo 2: Navegação e Instalação do Stack
+### Step 2: Navigate and Install Core Stack
 
-Abra o terminal integrado (`Ctrl + ~`). A pasta raiz do terminal é `labs`.
+Open the integrated terminal (`Ctrl + ~`).
 
-1. Navegue para a pasta deste laboratório:
+1. Navigate to this lab's directory:
 ```bash
 cd lab00-setup
 ```
 
-2. Instale as dependências da **Aula 01** (~5 a 10 segundos):
+2. Install Session 01 dependencies (~5 to 10 seconds):
 ```bash
 pip install -r ../requirements-aula01.txt
 ```
 
-3. Execute o script de validação de ambiente:
+3. Run the environment verification script:
 ```bash
 python check_env.py
 ```
 
-#### Saída Esperada no Terminal:
+#### Expected Terminal Output:
 ```text
 =================================================================
   [*] MBA ABD - DPM: ENVIRONMENT & DEPENDENCY VERIFICATION
 =================================================================
-  [OK] Python Runtime: v3.11+ detectado
+  [OK] Python Runtime: v3.11+ detected
 
 --- 1. Core Tooling (Session 01: Data Products & Contracts) ---
   [OK] DuckDB Python Engine: Installed and importable.
@@ -89,30 +89,30 @@ python check_env.py
 
 ---
 
-### Passo 3: Geração do Dataset Base (`transactions.parquet`)
+### Step 3: Generate Base Dataset (`transactions.parquet`)
 
-Para os laboratórios de contratos de dados e observabilidade, utilizaremos uma base de transações financeiras e pagamentos corporativos.
+For the upcoming data contracts and observability labs, we will leverage a synthetic financial transactions dataset representing enterprise payment operations.
 
-Dentro do diretório `lab00-setup`, execute o gerador de dados sintéticos:
+From within the `lab00-setup` directory, execute the synthetic data generator:
 
 ```bash
 python generate_sample_data.py
 ```
 
-O script criará o arquivo `data/transactions.parquet` contendo 2.500 registros transacionais com campos de identificação, valores monetários, métodos de pagamento e timestamps.
+The script generates `data/transactions.parquet` containing 2,500 transactional records complete with IDs, monetary amounts, payment methods, status codes, and timestamps.
 
 ---
 
-### Passo 4: Consulta Analítica com DuckDB
+### Step 4: Analytical Querying with DuckDB
 
-Vamos testar o processamento colunar em memória do DuckDB consultando diretamente o arquivo Parquet gerado através do script utilitário `query_data.py`:
+Let's test DuckDB's in-memory columnar engine by querying the generated Parquet file directly using the `query_data.py` utility script:
 
-1. Execute a consulta analítica:
+1. Execute the analytical query:
 ```bash
 python query_data.py
 ```
 
-#### Saída Esperada no Terminal:
+#### Expected Terminal Output:
 ```text
 =================================================================
   🦆 ANALYTICAL QUERY VIA DUCKDB (IN-MEMORY)
@@ -147,41 +147,41 @@ python query_data.py
 =================================================================
 ```
 
-2. *(Opcional)* Você também pode rodar consultas SQL rápidas direto da linha de comando via Python:
+2. *(Optional)* You can also run inline SQL queries directly from your shell via Python:
 ```bash
 python -c "import duckdb; duckdb.sql(\"SELECT payment_method, COUNT(*) AS total FROM 'data/transactions.parquet' GROUP BY payment_method\").show()"
 ```
 
 ---
 
-## 🧪 Validação & Critérios de Aceite
+## 🧪 Validation & Acceptance Criteria
 
-Para garantir que o seu setup está aprovado e pronto para o **Lab 01**:
+To confirm your setup is validated and ready for **Lab 01**:
 
-1. [x] Dependências da Aula 01 instaladas com sucesso (`duckdb`, `datacontract-cli`, `pandas`, `pyarrow`).
-2. [x] Script `check_env.py` executou com status `[OK] ENVIRONMENT 100% READY FOR SESSION 01 LABS!`.
-3. [x] O arquivo `data/transactions.parquet` foi gerado com sucesso.
-4. [x] O script `query_data.py` exibiu o schema e a agregação por método de pagamento.
+1. [x] Session 01 dependencies successfully installed (`duckdb`, `datacontract-cli`, `pandas`, `pyarrow`).
+2. [x] `check_env.py` script completed with status `[OK] ENVIRONMENT 100% READY FOR SESSION 01 LABS!`.
+3. [x] The file `data/transactions.parquet` was generated successfully.
+4. [x] The `query_data.py` script displayed schema inspection and payment method aggregations.
 
 ---
 
 ## 🧹 Cleanup
 
-Como o DuckDB executou consultas diretamente sobre o arquivo Parquet em memória (*in-process*), nenhum serviço residente em background ficou em execução.
+Because DuckDB runs in-process directly over the Parquet file, no persistent background services or containers are left running.
 
-Para limpar arquivos temporários se necessário:
+To clean up temporary files if needed:
 ```bash
 rm -f *.tmp *.log dev.duckdb
 ```
 
-Para retornar à pasta raiz `labs`:
+To return to the repository root:
 ```bash
 cd ..
 ```
 
 ---
 
-## 💡 Desafios Complementares (Para Praticar)
+## 💡 Complementary Challenges (Self-Practice)
 
-1. **Consulta com Filtro Temporal no DuckDB:** Edite o script `query_data.py` e adicione uma query SQL que identifique quais transações ocorreram com status `FAILED` e valor acima de `R$ 1.000,00`.
-2. **Exportação de Relatório:** Utilize o comando `COPY (...) TO 'data/report.csv' (HEADER, DELIMITER ',')` no DuckDB para gerar um relatório CSV sumarizado a partir do Parquet.
+1. **Time-Filtered Query in DuckDB:** Edit `query_data.py` and add a SQL query to identify all transactions with `FAILED` status and monetary amount exceeding `$1,000.00`.
+2. **Exporting Summarized Report:** Use DuckDB's `COPY (...) TO 'data/report.csv' (HEADER, DELIMITER ',')` syntax to generate an aggregated CSV report directly from the Parquet dataset.

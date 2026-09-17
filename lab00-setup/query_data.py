@@ -8,27 +8,27 @@ from pathlib import Path
 try:
     import duckdb
 except ImportError:
-    print("[ERRO] DuckDB nao instalado. Execute 'pip install -r ../requirements-aula01.txt' primeiro.")
+    print("[ERROR] DuckDB is not installed. Run 'pip install -r ../requirements-aula01.txt' first.")
     exit(1)
 
 
 def main():
     parquet_file = Path("data/transactions.parquet")
     if not parquet_file.exists():
-        print(f"[ERRO] Arquivo '{parquet_file}' nao encontrado.")
-        print("Execute 'python generate_sample_data.py' primeiro.")
+        print(f"[ERROR] File '{parquet_file}' not found.")
+        print("Run 'python generate_sample_data.py' first.")
         exit(1)
 
     con = duckdb.connect()
 
     print("=" * 65)
-    print("  🦆 CONSULTA ANALITICA VIA DUCKDB (EM-MEMORIA)")
+    print("  🦆 ANALYTICAL QUERY VIA DUCKDB (IN-MEMORY)")
     print("=" * 65)
 
-    print("\n--- 1. Inspecao de Schema & Tipos (DESCRIBE) ---")
+    print("\n--- 1. Schema & Type Inspection (DESCRIBE) ---")
     con.sql("DESCRIBE SELECT * FROM 'data/transactions.parquet';").show()
 
-    print("\n--- 2. Metricas Agregadas por Metodo de Pagamento ---")
+    print("\n--- 2. Aggregated Metrics by Payment Method ---")
     query_agg = """
         SELECT 
             payment_method,
@@ -42,7 +42,7 @@ def main():
     con.sql(query_agg).show()
 
     print("=" * 65)
-    print("  [OK] Processamento analitico DuckDB executado com sucesso!")
+    print("  [OK] DuckDB analytical processing executed successfully!")
     print("=" * 65 + "\n")
 
 
