@@ -71,23 +71,23 @@ python simulate_pipeline_incidents.py
 **Saída esperada:**
 ```text
 ================================================================================
-🚨 INJETOR DE TELEMETRIA OPERACIONAL & INCIDENTES DE DADOS (OPENLINEAGE)
+🚨 OPERATIONAL TELEMETRY & DATA INCIDENT INJECTOR (OPENLINEAGE)
 ================================================================================
-[*] Conectando ao Marquez Server via OpenLineageClient (http://localhost:5000)...
+[*] Connecting to Marquez Server via OpenLineageClient (http://localhost:5000)...
 
-[*] Emitindo histórico de 6 execuções para o Job: [fiap.mba.dpm:dbt_build_marts_financial]...
+[*] Emitting 6-run execution history for Job: [fiap.mba.dpm:dbt_build_marts_financial]...
 
-  ├─ Run 1a2b3c4d... | ✅ COMPLETED | Execução Regular Noturna (Batch D-1)
-  ├─ Run 2b3c4d5e... | ✅ COMPLETED | Execução Regular Matutina (Consolidação 06:00)
-  ├─ Run 3c4d5e6f... | ❌ FAILED    | INCIDENTE #1: Violação de Data Contract (18.4% nulls em 'customer_id')
-  │  └─ 💥 Causa Raiz: DataContractException: Check 'customer_id_not_null' failed on upstream staging. Null rate=18.4%.
-  ├─ Run 4d5e6f7a... | ❌ FAILED    | INCIDENTE #2: Retry Automático sem Correção (Airflow Retries Esgotados)
-  │  └─ 💥 Causa Raiz: SodaScanFailed: Quality Gate failed. 184 invalid rows detected in fct_financial_transactions.
-  ├─ Run 5e6f7a8b... | ✅ COMPLETED | RECUPERAÇÃO: Hotfix publicado pela engenharia e reprocessamento com sucesso
-  └─ Run 6f7a8b9c... | ✅ COMPLETED | Execução Regular Atual (Estado Saudável Restaurado)
+  ├─ Run 1a2b3c4d... | ✅ COMPLETED | Regular Nightly Execution (Batch D-1)
+  ├─ Run 2b3c4d5e... | ✅ COMPLETED | Regular Morning Execution (06:00 Consolidation)
+  ├─ Run 3c4d5e6f... | ❌ FAILED    | INCIDENT #1: Data Contract Violation (18.4% nulls in 'customer_id')
+  │  └─ 💥 Root Cause: DataContractException: Check 'customer_id_not_null' failed on upstream staging. Null rate=18.4%.
+  ├─ Run 4d5e6f7a... | ❌ FAILED    | INCIDENT #2: Automated Retry Without Fix (Airflow Retries Exhausted)
+  │  └─ 💥 Root Cause: SodaScanFailed: Quality Gate failed. 184 invalid rows detected in fct_financial_transactions.
+  ├─ Run 5e6f7a8b... | ✅ COMPLETED | RECOVERY: Engineering hotfix deployed and pipeline successfully reprocessed
+  └─ Run 6f7a8b9c... | ✅ COMPLETED | Current Regular Execution (Healthy State Restored)
 
 ================================================================================
-🌐 SUCESSO: Telemetria sincronizada com sucesso na API do Marquez!
+🌐 SUCCESS: Telemetry successfully synchronized to Marquez API!
 ================================================================================
 ```
 
@@ -114,33 +114,33 @@ python audit_downtime_slo.py
 **Saída esperada:**
 ```text
 ================================================================================
-📊 MOTOR DE AUDITORIA DE DATA SRE: SLI/SLO, ERROR BUDGET & DATA DOWNTIME
+📊 DATA SRE AUDITING ENGINE: SLI/SLO, ERROR BUDGET & DATA DOWNTIME
 ================================================================================
-[*] Conectando à API REST do Marquez em http://localhost:5000...
-  └─ [OK] 6 execuções reais coletadas da API do Marquez.
+[*] Connecting to Marquez REST API at http://localhost:5000...
+  └─ [OK] 6 actual runs collected from Marquez API.
 
-INCIDENTE      | STATUS       | MTTD (min) | MTTR (min) | DOWNTIME TOTAL   | CAUSA RAIZ
+INCIDENT       | STATUS       | MTTD (min) | MTTR (min) | TOTAL DOWNTIME   | ROOT CAUSE
 ----------------------------------------------------------------------------------------------------
-INC-2026-001   | RESOLVIDO    |      0.8 m |    359.2 m |      360.0 min (6.0h) | DataContractException: Check 'custo...
+INC-2026-001   | RESOLVED     |      0.8 m |    359.2 m |      360.0 min (6.0h) | DataContractException: Check 'custo...
 ----------------------------------------------------------------------------------------------------
 
-[📈 INDICADORES SRE & SLIS]:
-  ├─ Fonte de Telemetria:              MARQUEZ_REST_API
-  ├─ Total de Execuções Inspecionadas: 6 (Sucesso: 4 | Falhas: 2)
-  ├─ SLI Real de Disponibilidade:      66.7%
-  ├─ MTTD Médio (Detecção):            0.8 minutos
-  ├─ MTTR Médio (Recuperação):         359.2 minutos (6.0 horas)
-  └─ Data Downtime Acumulado:          360.0 minutos (6.0 horas)
+[📈 SRE INDICATORS & SLIS]:
+  ├─ Telemetry Source:                MARQUEZ_REST_API
+  ├─ Total Runs Inspected:            6 (Success: 4 | Failures: 2)
+  ├─ Actual Availability SLI:         66.7%
+  ├─ Mean MTTD (Detection):           0.8 minutes
+  ├─ Mean MTTR (Recovery):            359.2 minutes (6.0 hours)
+  └─ Accumulated Data Downtime:       360.0 minutes (6.0 hours)
 
-[🎯 AUDITORIA DE CONTRATO DE SERVIÇO (SLO)]:
-  ├─ Meta Contratual (SLO Acordado):   99.0%
-  ├─ Orçamento de Falha (Budget):      432 minutos/mês
-  ├─ Tempo Consumido por Incidentes:   360 minutos
-  └─ Consumo do Error Budget:          83.3%
+[🎯 SERVICE LEVEL OBJECTIVE (SLO) AUDIT]:
+  ├─ Contractual Target (Agreed SLO): 99.0%
+  ├─ Error Budget Allowance:          432 minutes/month
+  ├─ Time Consumed by Incidents:      360 minutes
+  └─ Error Budget Consumption:        83.3%
 
-💡 [CASO DE NEGÓCIO & ROI]:
-  ├─ Prejuízo Financeiro Acumulado no Período: $ 90,000.00 (~R$ 486,000.00)
-  └─ Relatório Executivo Gerado:               'DATA_RELIABILITY_REPORT.md'
+💡 [BUSINESS CASE & ROI]:
+  ├─ Financial Loss Accumulated in Period: $ 90,000.00 (~R$ 486,000.00)
+  └─ Generated Executive Report:            'DATA_RELIABILITY_REPORT.md'
 ================================================================================
 ```
 
@@ -172,7 +172,7 @@ Para considerar o Lab 07 concluído:
 
 ## 🧹 Cleanup
 
-Retorne para a raiz dos laboratórios:
+Retorne para o diretório raiz do repositório:
 
 ```bash
 cd ..

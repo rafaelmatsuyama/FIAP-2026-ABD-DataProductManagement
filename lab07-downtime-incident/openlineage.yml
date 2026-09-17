@@ -1,5 +1,5 @@
-# Configuração de Transporte do OpenLineage SDK para Lab 07
-# Envia eventos de telemetria operacional diretamente para a Marquez API (porta 5000)
+# OpenLineage SDK Transport Configuration for Lab 07
+# Emits operational telemetry events directly to Marquez API (port 5000)
 transport:
   type: http
   url: http://localhost:5000

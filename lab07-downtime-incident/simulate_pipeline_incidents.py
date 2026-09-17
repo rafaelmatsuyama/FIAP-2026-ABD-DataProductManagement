@@ -25,9 +25,9 @@ FALLBACK_FILE = Path("marquez_runs_fallback.json")
 
 def main():
     print("=" * 80)
-    print("🚨 INJETOR DE TELEMETRIA OPERACIONAL & INCIDENTES DE DADOS (OPENLINEAGE)")
+    print("🚨 OPERATIONAL TELEMETRY & DATA INCIDENT INJECTOR (OPENLINEAGE)")
     print("=" * 80)
-    print("[*] Conectando ao Marquez Server via OpenLineageClient (http://localhost:5000)...")
+    print("[*] Connecting to Marquez Server via OpenLineageClient (http://localhost:5000)...")
 
     try:
         client = OpenLineageClient()
@@ -46,50 +46,50 @@ def main():
                 client.emit(event)
             except Exception as ex:
                 marquez_online = False
-                print(f"  ⚠️  [AVISO] Marquez indisponível ({ex}). Armazenando em buffer local...")
+                print(f"  ⚠️  [WARNING] Marquez unavailable ({ex}). Storing in local buffer...")
 
-    # Cenários de execução ao longo de uma janela operacional de 24 horas
+    # Execution scenarios across a 24-hour operational window
     scenarios = [
         {
             "offset_hours": 24,
             "duration_sec": 120,
             "state": RunState.COMPLETE,
-            "desc": "Execução Regular Noturna (Batch D-1)",
+            "desc": "Regular Nightly Execution (Batch D-1)",
             "error": None
         },
         {
             "offset_hours": 18,
             "duration_sec": 115,
             "state": RunState.COMPLETE,
-            "desc": "Execução Regular Matutina (Consolidação 06:00)",
+            "desc": "Regular Morning Execution (06:00 Consolidation)",
             "error": None
         },
         {
             "offset_hours": 12,
             "duration_sec": 45,
             "state": RunState.FAIL,
-            "desc": "INCIDENTE #1: Violação de Data Contract (18.4% nulls em 'customer_id')",
+            "desc": "INCIDENT #1: Data Contract Violation (18.4% nulls in 'customer_id')",
             "error": "DataContractException: Check 'customer_id_not_null' failed on upstream staging. Null rate=18.4%."
         },
         {
             "offset_hours": 10,
             "duration_sec": 40,
             "state": RunState.FAIL,
-            "desc": "INCIDENTE #2: Retry Automático sem Correção (Airflow Retries Esgotados)",
+            "desc": "INCIDENT #2: Automated Retry Without Fix (Airflow Retries Exhausted)",
             "error": "SodaScanFailed: Quality Gate failed. 184 invalid rows detected in fct_financial_transactions."
         },
         {
             "offset_hours": 6,
             "duration_sec": 145,
             "state": RunState.COMPLETE,
-            "desc": "RECUPERAÇÃO: Hotfix publicado pela engenharia e reprocessamento com sucesso",
+            "desc": "RECOVERY: Engineering hotfix deployed and pipeline successfully reprocessed",
             "error": None
         },
         {
             "offset_hours": 1,
             "duration_sec": 110,
             "state": RunState.COMPLETE,
-            "desc": "Execução Regular Atual (Estado Saudável Restaurado)",
+            "desc": "Current Regular Execution (Healthy State Restored)",
             "error": None
         }
     ]
@@ -103,7 +103,7 @@ def main():
         OutputDataset(namespace="duckdb://analytics/marts", name="fct_financial_transactions")
     ]
 
-    print(f"\n[*] Emitindo histórico de 6 execuções para o Job: [{NAMESPACE}:{JOB_NAME}]...\n")
+    print(f"\n[*] Emitting 6-run execution history for Job: [{NAMESPACE}:{JOB_NAME}]...\n")
 
     runs_summary = []
 
@@ -120,7 +120,7 @@ def main():
             facets={"nominalTime": NominalTimeRunFacet(nominalStartTime=start_iso)}
         )
 
-        # 1. Evento START
+        # 1. START Event
         emit(RunEvent(
             eventType=RunState.START,
             eventTime=start_iso,
@@ -131,7 +131,7 @@ def main():
             outputs=[]
         ))
 
-        # 2. Evento de Término (COMPLETE ou FAIL)
+        # 2. Terminal Event (COMPLETE or FAIL)
         end_facets = {}
         if sc["state"] == RunState.FAIL and sc["error"]:
             end_facets["errorMessage"] = ErrorMessageRunFacet(
@@ -154,7 +154,7 @@ def main():
         status_icon = "✅ COMPLETED" if sc["state"] == RunState.COMPLETE else "❌ FAILED"
         print(f"  ├─ Run {run_id[:8]}... | {status_icon} | {sc['desc']}")
         if sc["error"]:
-            print(f"  │  └─ 💥 Causa Raiz: {sc['error']}")
+            print(f"  │  └─ 💥 Root Cause: {sc['error']}")
 
         runs_summary.append({
             "id": run_id,
@@ -165,7 +165,7 @@ def main():
             "errorMessage": sc["error"]
         })
 
-    # Gravar snapshot local para fallback
+    # Record local snapshot for fallback
     with open(FALLBACK_FILE, "w", encoding="utf-8") as f:
         json.dump({
             "namespace": NAMESPACE,
@@ -176,11 +176,11 @@ def main():
 
     print("\n" + "=" * 80)
     if marquez_online:
-        print("🌐 SUCESSO: Telemetria sincronizada com sucesso na API do Marquez!")
-        print("   Abra o Marquez UI em http://localhost:3000 e selecione o Namespace 'fiap.mba.dpm'.")
-        print(f"   Clique no Job '{JOB_NAME}' para visualizar o histórico de badges verdes e vermelhos.")
+        print("🌐 SUCCESS: Telemetry successfully synchronized to Marquez API!")
+        print("   Open Marquez UI at http://localhost:3000 and select Namespace 'fiap.mba.dpm'.")
+        print(f"   Click Job '{JOB_NAME}' to view green and red run badges history.")
     else:
-        print(f"💾 Snapshot local de contingência salvo com sucesso em '{FALLBACK_FILE}'.")
+        print(f"💾 Local contingency snapshot saved successfully to '{FALLBACK_FILE}'.")
     print("=" * 80)
 
 if __name__ == "__main__":
