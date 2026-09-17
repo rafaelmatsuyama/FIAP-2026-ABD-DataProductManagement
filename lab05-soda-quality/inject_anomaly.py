@@ -4,17 +4,17 @@ from pathlib import Path
 db_path = Path("data/analytics.duckdb")
 
 if not db_path.exists():
-    print("[ERRO] Banco data/analytics.duckdb nao encontrado. Execute 'python setup_duckdb.py' primeiro.")
+    print("[ERROR] Database data/analytics.duckdb not found. Run 'python setup_duckdb.py' first.")
     exit(1)
 
 con = duckdb.connect(str(db_path))
 
-print("[!] Injetando anomalias sinteticas na tabela transactions...")
+print("[!] Injecting synthetic anomalies into transactions table...")
 
-# Inserir transacoes corrompidas para disparar falha no Quality Gate:
-# 1. amount negativo (-999.00)
-# 2. transaction_id NULL
-# 3. status invalido ('CORRUPTED_STATUS')
+# Insert corrupted transactions to trigger Quality Gate failure:
+# 1. Negative amount (-999.50)
+# 2. NULL transaction_id
+# 3. Invalid status ('CORRUPTED_STATUS')
 con.execute("""
     INSERT INTO transactions (transaction_id, customer_id, amount, fee, payment_method, status, currency, created_at)
     VALUES 
@@ -23,6 +23,6 @@ con.execute("""
 """)
 
 count = con.execute("SELECT COUNT(*) FROM transactions WHERE amount < 0 OR transaction_id IS NULL").fetchone()[0]
-print(f"[OK] Anomalias injetadas com sucesso! {count} registros defeituosos inseridos.")
-print("Agora execute: soda scan -d analytics -c configuration.yml checks.yml")
+print(f"[OK] Anomalies successfully injected! {count} defective records inserted.")
+print("Now run: soda scan -d analytics -c configuration.yml checks.yml")
 con.close()

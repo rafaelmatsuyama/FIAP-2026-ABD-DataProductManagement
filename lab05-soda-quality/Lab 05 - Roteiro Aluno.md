@@ -80,9 +80,9 @@ python setup_duckdb.py
 
 **Saída esperada:**
 ```text
-Tabela transactions inicializada com 1000 registros.
-Tabela customers criada com 100 clientes cadastrados.
-[OK] Setup da base analytics.duckdb concluido com sucesso!
+Table transactions initialized with 1000 records.
+Table customers created with 100 registered customers.
+[OK] Database analytics.duckdb setup completed successfully!
 ```
 
 ---
@@ -107,17 +107,17 @@ Abra o arquivo [`checks.yml`](checks.yml). O SodaCL permite expressar regras sem
 
 ```yaml
 checks for transactions:
-  # 1. Integridade Estrutural & Volumetria
+  # 1. Structural Integrity & Volumetrics
   - row_count > 0
   - missing_count(transaction_id) = 0
   - duplicate_count(transaction_id) = 0
 
-  # 2. Regras de Domínio Financeiro & Limites
+  # 2. Financial Domain Rules & Thresholds
   - min(amount) > 0
   - max(amount) <= 10000
   - missing_count(amount) = 0
 
-  # 3. Categorias e Valores Aceitos
+  # 3. Valid Categories and Accepted Values
   - invalid_count(status) = 0:
       valid values: ['COMPLETED', 'FAILED', 'PENDING']
 
@@ -127,7 +127,7 @@ checks for transactions:
   - invalid_count(currency) = 0:
       valid values: ['BRL', 'USD', 'EUR']
 
-  # 4. Integridade Temporal
+  # 4. Temporal Integrity
   - missing_count(created_at) = 0
 ```
 
@@ -204,7 +204,7 @@ Para considerar o Lab 05 concluído com êxito:
 
 ## 🧹 Cleanup
 
-Após concluir as validações, retorne para o diretório raiz dos laboratórios:
+Após concluir as validações, retorne para o diretório raiz do repositório:
 
 ```bash
 cd ..

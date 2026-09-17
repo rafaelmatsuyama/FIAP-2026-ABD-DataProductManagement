@@ -7,7 +7,7 @@ data_dir.mkdir(parents=True, exist_ok=True)
 db_path = data_dir / "analytics.duckdb"
 parquet_path = data_dir / "transactions.parquet"
 
-# 1. Buscar o arquivo transactions.parquet dos labs anteriores se nao existir localmente
+# 1. Look for transactions.parquet from previous labs if not present locally
 if not parquet_path.exists():
     possible_sources = [
         Path("../lab04-dbt-testing/data/transactions.parquet"),
@@ -19,12 +19,12 @@ if not parquet_path.exists():
     for src in possible_sources:
         if src.exists():
             shutil.copy2(src, parquet_path)
-            print(f"Copiado transactions.parquet de {src}")
+            print(f"Copied transactions.parquet from {src}")
             break
 
-# 2. Se nao existir em nenhum local, gerar dataset canonico na hora (Self-Healing)
+# 2. If not found in any location, generate canonical dataset on the fly (Self-Healing)
 if not parquet_path.exists():
-    print("[*] Dataset base nao encontrado. Gerando dados sinteticos canonicos (Self-Healing)...")
+    print("[*] Base dataset not found. Generating canonical synthetic data (Self-Healing)...")
     mem_con = duckdb.connect()
     mem_con.execute(f"""
         CREATE TABLE raw_transactions AS
@@ -52,27 +52,27 @@ if not parquet_path.exists():
         COPY raw_transactions TO '{parquet_path.as_posix()}' (FORMAT PARQUET);
     """)
     mem_con.close()
-    print(f"[OK] Arquivo '{parquet_path}' gerado com sucesso!")
+    print(f"[OK] File '{parquet_path}' successfully generated!")
 
 con = duckdb.connect(str(db_path))
 
-# 1. Tabela transactions
+# 1. Table transactions
 con.execute(f"CREATE OR REPLACE TABLE transactions AS SELECT * FROM '{parquet_path.as_posix()}';")
 tx_count = con.execute('SELECT COUNT(*) FROM transactions').fetchone()[0]
-print(f"Tabela transactions inicializada com {tx_count} registros.")
+print(f"Table transactions initialized with {tx_count} records.")
 
-# 2. Tabela customers (para testes relacionais e integridade de dimensao)
+# 2. Table customers (for relational tests and dimension integrity)
 con.execute("""
     CREATE OR REPLACE TABLE customers AS
     SELECT 
         'CUST_' || LPAD(i::VARCHAR, 4, '0') AS customer_id,
-        'Cliente ' || i::VARCHAR AS customer_name,
+        'Customer ' || i::VARCHAR AS customer_name,
         CASE WHEN i % 4 = 0 THEN 'VIP' WHEN i % 4 = 1 THEN 'GOLD' ELSE 'STANDARD' END AS customer_tier,
         'BR' AS country_code,
         DATE '2025-01-01' + INTERVAL (i * 3) DAY AS signup_date
     FROM generate_series(1, 100) t(i);
 """)
-print(f"Tabela customers criada com {con.execute('SELECT COUNT(*) FROM customers').fetchone()[0]} clientes cadastrados.")
+print(f"Table customers created with {con.execute('SELECT COUNT(*) FROM customers').fetchone()[0]} registered customers.")
 
 con.close()
-print("[OK] Setup da base analytics.duckdb concluido com sucesso!")
+print("[OK] Database analytics.duckdb setup completed successfully!")

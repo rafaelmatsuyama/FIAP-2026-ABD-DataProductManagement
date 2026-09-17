@@ -10,16 +10,16 @@ def patch_protobuf():
         if p.exists():
             text = p.read_text(encoding="utf-8")
             if "except (ImportError, TypeError):" in text:
-                print("[OK] Protobuf ja esta com o patch de compatibilidade aplicado.")
+                print("[OK] Protobuf compatibility patch is already applied.")
                 return
             if "except ImportError:" in text:
                 new_text = text.replace("except ImportError:", "except (ImportError, TypeError):")
                 p.write_text(new_text, encoding="utf-8")
-                print("[OK] Patch de compatibilidade do Protobuf aplicado com sucesso.")
+                print("[OK] Protobuf compatibility patch applied successfully.")
                 patched = True
                 break
     if not patched:
-        print("[INFO] Arquivo api_implementation.py do Protobuf nao precisou de patch.")
+        print("[INFO] Protobuf api_implementation.py file did not require patching.")
 
 if __name__ == "__main__":
     patch_protobuf()
