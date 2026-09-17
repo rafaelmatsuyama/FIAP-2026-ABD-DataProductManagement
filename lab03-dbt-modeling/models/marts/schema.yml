@@ -2,39 +2,39 @@ version: 2
 
 models:
   - name: fct_financial_transactions
-    description: "Mart analítico de transações financeiras liquidadas (Data Product de Consumo Corporativo)."
+    description: "Analytical mart of settled financial transactions (Enterprise Consumption Data Product)."
     config:
       contract:
         enforced: true
     columns:
       - name: transaction_id
         data_type: varchar
-        description: "Identificador universal da transação."
+        description: "Universal unique transaction identifier."
         constraints:
           - type: not_null
       - name: customer_id
         data_type: varchar
-        description: "Identificador único do cliente consumidor."
+        description: "Pseudonymized paying customer identifier."
         constraints:
           - type: not_null
       - name: amount
         data_type: double
-        description: "Valor bruto da transação financeira."
+        description: "Gross financial transaction amount."
       - name: fee
         data_type: double
-        description: "Taxa de liquidação cobrada."
+        description: "Settlement processing fee charged."
       - name: net_amount
         data_type: double
-        description: "Valor líquido creditado ao recebedor."
+        description: "Net settlement amount credited to recipient."
       - name: currency
         data_type: varchar
-        description: "Moeda ISO 4217 (ex: BRL, USD)."
+        description: "ISO 4217 currency code (e.g., BRL, USD)."
       - name: status
         data_type: varchar
-        description: "Status de liquidação da transação."
+        description: "Operational settlement status of the transaction."
       - name: payment_method
         data_type: varchar
-        description: "Meio de pagamento processado (PIX, CREDIT_CARD, BOLETO)."
+        description: "Payment method processed (PIX, CREDIT_CARD, BOLETO)."
       - name: created_at
         data_type: timestamp
-        description: "Carimbo de data/hora do processamento da transação."
+        description: "Timestamp of transaction event processing."

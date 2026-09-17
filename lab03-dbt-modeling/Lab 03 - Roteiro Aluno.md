@@ -51,7 +51,7 @@ cd lab03-dbt-modeling
 ```
 
 > [!NOTE]
-> Todos os comandos deste laboratório devem ser executados a partir de `labs/lab03-dbt-modeling`.
+> Todos os comandos deste laboratório devem ser executados a partir de `lab03-dbt-modeling`.
 
 ---
 
@@ -83,8 +83,8 @@ python setup_duckdb.py
 
 *Saída Esperada:*
 ```text
-Base analytics.duckdb inicializada com 1000 transacoes.
-Setup concluido com sucesso!
+[OK] Database analytics.duckdb initialized with 1000 records.
+[OK] Setup completed successfully!
 ```
 
 ---
@@ -273,7 +273,7 @@ Para garantir que o seu laboratório está 100% concluído com sucesso:
 
 ## 🧹 Cleanup
 
-Após concluir todas as validações, retorne ao diretório raiz de laboratórios:
+Após concluir todas as validações, retorne ao diretório raiz do repositório:
 
 ```bash
 cd ..
