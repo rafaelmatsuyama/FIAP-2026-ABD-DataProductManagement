@@ -9,55 +9,55 @@
       "type": "VARCHAR",
       "required": true,
       "unique": true,
-      "description": "Identificador único da transação financeira."
+      "description": "Unique identifier for the financial transaction."
     },
     {
       "name": "customer_id",
       "type": "VARCHAR",
       "required": true,
       "unique": false,
-      "description": "Identificador pseudo-anonimizado do cliente pagador."
+      "description": "Pseudonymized identifier of the paying customer."
     },
     {
       "name": "amount",
       "type": "DECIMAL(18,2)",
       "required": true,
       "minimum": 0.01,
-      "description": "Valor financeiro monetário da transação."
+      "description": "Monetary value of the transaction."
     },
     {
       "name": "payment_method",
       "type": "VARCHAR",
       "required": true,
       "allowed_values": ["PIX", "CREDIT_CARD", "DEBIT_CARD", "BOLETO"],
-      "description": "Canal ou arranjo de pagamento utilizado."
+      "description": "Payment method or settlement rail used."
     },
     {
       "name": "status",
       "type": "VARCHAR",
       "required": true,
       "allowed_values": ["COMPLETED", "PENDING", "FAILED"],
-      "description": "Status operacional do processamento da transação."
+      "description": "Operational processing status of the transaction."
     },
     {
       "name": "fee",
       "type": "DECIMAL(18,2)",
       "required": true,
       "minimum": 0.0,
-      "description": "Taxa de liquidacao cobrada na transacao."
+      "description": "Settlement fee charged on the transaction."
     },
     {
       "name": "currency",
       "type": "VARCHAR",
       "required": true,
       "allowed_values": ["BRL", "USD", "EUR"],
-      "description": "Código da moeda transacionada (ISO 4217)."
+      "description": "Transaction currency code (ISO 4217)."
     },
     {
       "name": "created_at",
       "type": "TIMESTAMP",
       "required": true,
-      "description": "Data e hora do registro da transação."
+      "description": "Timestamp when the transaction record was created."
     }
   ]
 }

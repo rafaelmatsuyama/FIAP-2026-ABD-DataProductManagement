@@ -1,60 +1,60 @@
 # Data Product Canvas: Financial Risk & Payment Transactions
 
-**Nome do Produto de Dados:** `financial_transactions_product`  
-**Domínio:** `Fintech & Core Banking`  
-**Data Product Owner (DPO):** `Squad de Risco & Prevenção a Fraudes`  
-**Status do Ciclo de Vida:** `Development / Pre-Production (v1.0.0)`  
+**Data Product Name:** `financial_transactions_product`  
+**Domain:** `Fintech & Core Banking`  
+**Data Product Owner (DPO):** `Fraud Prevention & Risk Analytics Squad`  
+**Lifecycle Status:** `Development / Pre-Production (v1.0.0)`  
 
 ---
 
-## 1. 🎯 Proposta de Valor & Problema de Negócio
-* **Problema:** Times de Prevenção a Fraudes e Risco de Crédito consumiam dados brutos de transações com esquemas voláteis, gerando quebras recorrentes de modelos e atrasos na detecção de anomalias.
-* **Proposta de Valor:** Entregar uma visão transacional analítica confiável, limpa, enriquecida e com garantias de entrega contínua (SLAs de frescor de 15 minutos e integridade de tipos).
+## 1. 🎯 Value Proposition & Business Problem
+* **Problem:** Fraud Prevention and Credit Risk teams consumed raw, volatile transaction tables directly from transactional systems, resulting in frequent downstream model pipeline breakages and severe delays in fraud anomaly detection.
+* **Value Proposition:** Deliver a trustworthy, clean, enriched analytical view of payment transactions backed by explicit SLAs/SLOs (15-minute freshness, strict schema enforcement, and zero silent schema drift).
 
 ---
 
-## 2. 👥 Consumidores & Casos de Uso (Personas)
-1. **Time de Detecção de Fraude (Data Science):** Treinamento e inferência de modelos de detecção de transações suspeitas em tempo quase-real.
-2. **Time de Compliance & Risco Regulatório:** Auditoria de volumes financeiros por método de pagamento (PIX, Cartão, Boleto).
-3. **Executivos de Operações (Analytics):** Dashboards de faturamento e ticket médio por canal de pagamento.
+## 2. 👥 Consumers & Use Cases (Personas)
+1. **Fraud Detection Squad (Data Science):** Feature generation, model training, and near-real-time suspicious transaction scoring.
+2. **Regulatory Compliance & Audit Team:** Continuous auditing of transactional volumes, settlement fees, and payment channel distribution.
+3. **Operations & Revenue Analytics (BI):** Executive dashboards tracking throughput, gross volume, and average ticket across payment rails.
 
 ---
 
-## 3. 🔌 Portas de Saída (Output Ports / Interfaces)
-* **Formato de Entrega:** Arquivo colunar Parquet (`data/transactions.parquet`) e Views Analíticas DuckDB.
-* **Protocolo de Acesso:** OLAP In-Memory / Object Storage / SQL Interface.
-* **Contrato Semântico:** Schema Versionado v1.0.0 (OpenDataContract Standard - ODCS).
+## 3. 🔌 Output Ports & Consumption Interfaces
+* **Delivery Format:** In-memory columnar Parquet dataset (`data/transactions.parquet`) and registered DuckDB analytical views.
+* **Access Protocol:** OLAP In-Memory / Object Storage / SQL Interface.
+* **Semantic Contract:** Versioned OpenDataContract Standard (ODCS v1.0.0) specification.
 
 ---
 
-## 4. 📥 Portas de Entrada & Fontes de Dados (Input Ports)
-* **Origem Primária:** CDC (Change Data Capture) do Banco Relacional Transacional de Core Banking.
-* **Frequência de Ingestão:** Micro-batch a cada 5 minutos.
-* **Classificação de Dados:** Dados Financeiros Crônicos com identificadores ofuscados (Tokenização de `customer_id`).
+## 4. 📥 Input Ports & Source Lineage
+* **Primary Source:** CDC (Change Data Capture) stream from Core Banking Relational Ledger.
+* **Ingestion Cadence:** Micro-batch stream every 5 minutes.
+* **Data Classification:** Sensitive Financial Data with tokenized PII identifiers (`customer_id`).
 
 ---
 
-## 5. 🛡️ Garantias de Serviço & SLOs (Service Level Objectives)
-* **Frescor do Dado (Freshness):** Máximo de **15 minutos** de atraso entre a transação e a disponibilidade analítica.
-* **Disponibilidade (Availability):** 99.5% de disponibilidade das portas de saída.
-* **Retenção (Data Retention):** Histórico de 365 dias para auditoria financeira.
-* **Qualidade Crítica (Hard Constraints):**
-  * `transaction_id`: Chave primária única, não nula.
-  * `amount`: Valor numérico positivo $> 0.00$.
-  * `fee`: Taxa de liquidação $\ge 0.00$.
-  * `payment_method`: Domínio restrito a `['PIX', 'CREDIT_CARD', 'BOLETO']`.
-  * `status`: Domínio restrito a `['COMPLETED', 'FAILED']`.
-  * `created_at`: Timestamp de registro da transação.
+## 5. 🛡️ Service Level Objectives (SLOs) & Quality Gates
+* **Data Freshness:** Maximum **15-minute** latency between transaction execution and analytical availability.
+* **Availability:** 99.5% uptime for analytical output ports.
+* **Data Retention:** 365 days of partitioned operational history for regulatory audits.
+* **Critical Quality Gates (Hard Constraints):**
+  * `transaction_id`: Primary key, mandatory, unique, not null.
+  * `amount`: Positive financial value $> 0.00$.
+  * `fee`: Non-negative settlement fee $\ge 0.00$.
+  * `payment_method`: Restricted domain `['PIX', 'CREDIT_CARD', 'DEBIT_CARD', 'BOLETO']`.
+  * `status`: Restricted domain `['COMPLETED', 'PENDING', 'FAILED']`.
+  * `created_at`: Valid ISO-8601 transaction timestamp.
 
 ---
 
-## 6. 🔒 Governança, Segurança & Compliance
-* **LGPD / Privacidade:** Não armazena dados PII em texto plano (nomes, CPFs ou cartões completos). Identificador pseudo-anonimizado (`customer_id = cust_XXXX`).
-* **Classificação de Acesso:** Confidencial / Uso Interno Autorizado.
+## 6. 🔒 Governance, Security & Compliance
+* **Privacy & Compliance (GDPR/LGPD):** Zero plaintext PII stored (no customer names, tax IDs, or raw credit card numbers). Uses pseudonymized identifiers (`customer_id = cust_XXXX`).
+* **Access Classification:** Confidential / Restricted Internal Use.
 
 ---
 
-## 7. 📈 Métricas de Sucesso & ROI do Produto
-* **Redução de Incidentes (Data Downtime):** Redução de 80% nas quebras de pipelines analíticos downstream.
-* **Tempo de Onboarding:** Novo analista/cientista de dados consome o produto em menos de 10 minutos via especificação formal.
-* **Taxa de Conformidade:** 100% das transações validadas contra o schema antes da publicação.
+## 7. 📈 Success Metrics & Product ROI
+* **Data Downtime Reduction:** 80% decrease in downstream ML pipeline incidents and schema drift failures.
+* **Consumer Onboarding Velocity:** Reduced time-to-first-query from days to under 10 minutes via machine-readable contract specifications.
+* **Contract Compliance Rate:** 100% of published transactions pass automated schema and quality gates.

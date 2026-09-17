@@ -89,33 +89,33 @@ python validate_schema.py
 #### Saída Esperada no Terminal:
 ```text
 ======================================================================
-  📋 LAB 01: AUDITORIA DE SCHEMA & CONFORMIDADE DO PRODUTO DE DADOS
+  📋 LAB 01: SCHEMA AUDIT & DATA PRODUCT COMPLIANCE
 ======================================================================
-  [i] Produto de Dados: 'financial_transactions_product' (v1.0.0)
-  [i] Total de Registros Analisados: 2500
+  [i] Data Product: 'financial_transactions_product' (v1.0.0)
+  [i] Total Records Analyzed: 2500
 
---- 1. Validacao de Campos Obrigatorios (Not Null) ---
-  [PASS] Campo 'transaction_id': 0 nulos encontrados.
-  [PASS] Campo 'customer_id': 0 nulos encontrados.
-  [PASS] Campo 'amount': 0 nulos encontrados.
-  [PASS] Campo 'payment_method': 0 nulos encontrados.
-  [PASS] Campo 'status': 0 nulos encontrados.
-  [PASS] Campo 'currency': 0 nulos encontrados.
-  [PASS] Campo 'transaction_timestamp': 0 nulos encontrados.
+--- 1. Mandatory Fields Validation (Not Null) ---
+  [PASS] Field 'transaction_id': 0 nulls found.
+  [PASS] Field 'customer_id': 0 nulls found.
+  [PASS] Field 'amount': 0 nulls found.
+  [PASS] Field 'payment_method': 0 nulls found.
+  [PASS] Field 'status': 0 nulls found.
+  [PASS] Field 'currency': 0 nulls found.
+  [PASS] Field 'transaction_timestamp': 0 nulls found.
 
---- 2. Validacao de Unicidade de Chave Primaria ---
-  [PASS] Chave 'transaction_id': 100% unica (2500/2500).
+--- 2. Primary Key Uniqueness Validation ---
+  [PASS] Key 'transaction_id': 100% unique (2500/2500).
 
---- 3. Validacao de Dominios de Valores Permitidos ---
-  [PASS] Dominio de 'payment_method' ['PIX', 'CREDIT_CARD', 'DEBIT_CARD', 'BOLETO']: 100% conforme.
-  [PASS] Dominio de 'status' ['COMPLETED', 'PENDING', 'FAILED']: 100% conforme.
-  [PASS] Dominio de 'currency' ['BRL', 'USD', 'EUR']: 100% conforme.
+--- 3. Allowed Domain Values Validation ---
+  [PASS] Domain of 'payment_method' ['PIX', 'CREDIT_CARD', 'DEBIT_CARD', 'BOLETO']: 100% compliant.
+  [PASS] Domain of 'status' ['COMPLETED', 'PENDING', 'FAILED']: 100% compliant.
+  [PASS] Domain of 'currency' ['BRL', 'USD', 'EUR']: 100% compliant.
 
---- 4. Validacao de Regras Numericas de Negocio ---
-  [PASS] Regra 'amount >= 0.01': 100% conforme.
+--- 4. Numerical Business Rules Validation ---
+  [PASS] Rule 'amount >= 0.01': 100% compliant.
 
 ======================================================================
-  [OK] CONFORMIDADE TOTAL: O DATASET ATENDE 100% AO DATA PRODUCT CANVAS!
+  [OK] FULL COMPLIANCE: DATASET MEETS 100% OF DATA PRODUCT CANVAS REQUIREMENTS!
 ======================================================================
 ```
 
