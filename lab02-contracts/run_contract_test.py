@@ -25,7 +25,7 @@ def ensure_data_and_db_exist() -> None:
         ]:
             if candidate.exists():
                 shutil.copy2(candidate, parquet_path)
-                print(f"[*] Base sincronizada de '{candidate}' para '{parquet_path}'.")
+                print(f"[*] Dataset synchronized from '{candidate}' to '{parquet_path}'.")
                 break
 
     # 2. Build or refresh DuckDB table
@@ -50,14 +50,14 @@ def ensure_data_and_db_exist() -> None:
             con.execute(f"COPY transactions TO '{parquet_path.as_posix()}' (FORMAT PARQUET);")
         con.close()
     except Exception as e:
-        print(f"[AVISO] Erro ao preparar DuckDB: {e}")
+        print(f"[WARN] Error preparing DuckDB: {e}")
 
 
 def run_contract_test(contract_path: str) -> bool:
     """Execute datacontract test command."""
     ensure_data_and_db_exist()
     print("=" * 70)
-    print(f"  📜 TESTANDO DATA CONTRACT: '{contract_path}'")
+    print(f"  📜 TESTING DATA CONTRACT: '{contract_path}'")
     print("=" * 70)
 
     cli_bin = shutil.which("datacontract")
@@ -74,7 +74,7 @@ def run_contract_test(contract_path: str) -> bool:
             print(result.stderr)
         return result.returncode == 0
     except Exception as e:
-        print(f"[AVISO] Erro ao invocar CLI: {e}")
+        print(f"[WARN] Error invoking CLI: {e}")
         return False
 
 
@@ -89,9 +89,9 @@ def main():
 
     success = run_contract_test(args.contract)
     if success:
-        print("  [OK] CONTRATO DE DADOS 100% APROVADO PELO QUALITY GATE!")
+        print("  [OK] DATA CONTRACT 100% APPROVED BY QUALITY GATE!")
     else:
-        print("  [FAIL] VIOLACOES DETECTADAS NO CONTRATO DE DADOS.")
+        print("  [FAIL] VIOLATIONS DETECTED IN DATA CONTRACT.")
     print("=" * 70 + "\n")
 
 

@@ -4,21 +4,21 @@ info:
   title: Financial Risk & Payment Transactions Product
   version: 1.0.0
   status: active
-  description: Produto de dados transacionais para modelos de risco, prevenção a fraudes e relatórios regulatórios.
-  owner: Squad de Risco & Prevenção a Fraudes
+  description: Analytical payment transactions dataset powering credit risk models, fraud detection algorithms, and regulatory compliance reporting.
+  owner: Fraud Prevention & Risk Analytics Squad
   contact:
-    name: Time de Engenharia & DPO
-    email: dpo.risco@empresa.com
+    name: Data Engineering Team & DPO
+    email: dpo.risk@company.com
 
 servers:
   local:
     type: duckdb
     database: data/analytics.duckdb
-    description: Banco analítico local DuckDB contendo a tabela transactions.
+    description: Local embedded DuckDB analytical database serving the transactions table.
 
 models:
   transactions:
-    description: Eventos transacionais consolidados por arranjo de pagamento.
+    description: Consolidated financial transaction events partitioned across payment arrangements.
     type: table
     fields:
       transaction_id:
@@ -26,18 +26,18 @@ models:
         primary: true
         required: true
         unique: true
-        description: Identificador global e único da transação.
+        description: Globally unique financial transaction identifier.
       customer_id:
         type: varchar
         required: true
         pii: true
         classification: confidential
-        description: Identificador pseudo-anonimizado do cliente.
+        description: Pseudonymized identifier representing the paying customer.
       amount:
         type: decimal
         required: true
         minimum: 0.01
-        description: Valor financeiro líquido da transação.
+        description: Net financial settlement amount of the transaction.
       payment_method:
         type: varchar
         required: true
@@ -46,7 +46,7 @@ models:
           - CREDIT_CARD
           - DEBIT_CARD
           - BOLETO
-        description: Canal ou método de pagamento utilizado.
+        description: Authorized payment method or settlement rail used.
       status:
         type: varchar
         required: true
@@ -54,12 +54,12 @@ models:
           - COMPLETED
           - PENDING
           - FAILED
-        description: Estado de liquidação da transação.
+        description: Operational transaction processing state.
       fee:
         type: decimal
         required: true
         minimum: 0.00
-        description: Taxa de processamento ou liquidação cobrada.
+        description: Settlement transaction processing fee charged.
       currency:
         type: varchar
         required: true
@@ -67,19 +67,19 @@ models:
           - BRL
           - USD
           - EUR
-        description: Moeda transacionada (ISO 4217).
+        description: Transaction ISO 4217 currency code.
       created_at:
         type: timestamp
         required: true
-        description: Timestamp do registro no sistema de origem.
+        description: Origin system transaction registration timestamp.
 
 servicelevels:
   freshness:
     threshold: 15m
-    description: Dados disponíveis no output port em no máximo 15 minutos.
+    description: Maximum 15-minute latency between transaction execution and output port availability.
   frequency:
     type: microbatch
-    description: Processamento em micro-batches a cada 5 minutos.
+    description: Ingestion pipeline executes in micro-batches every 5 minutes.
   retention:
     period: 365d
-    description: Retenção obrigatória de 1 ano para fins de auditoria regulatória.
+    description: Mandatory 365-day partitioned historical retention for regulatory compliance.

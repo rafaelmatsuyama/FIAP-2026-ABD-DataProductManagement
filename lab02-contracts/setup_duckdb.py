@@ -7,7 +7,7 @@ data_dir.mkdir(parents=True, exist_ok=True)
 db_path = data_dir / "analytics.duckdb"
 parquet_path = data_dir / "transactions.parquet"
 
-# 1. Buscar o arquivo transactions.parquet dos labs anteriores se nao existir localmente
+# 1. Sync transactions.parquet from previous labs if missing locally
 if not parquet_path.exists():
     possible_sources = [
         Path("../lab00-setup/data/transactions.parquet"),
@@ -17,12 +17,12 @@ if not parquet_path.exists():
     for src in possible_sources:
         if src.exists():
             shutil.copy2(src, parquet_path)
-            print(f"[*] Copiado transactions.parquet de {src}")
+            print(f"[*] Copied transactions.parquet from {src}")
             break
 
-# 2. Se nao existir em nenhum local, gerar dataset canônico na hora (Self-Healing)
+# 2. If not found anywhere, generate canonical dataset on the fly (Self-Healing)
 if not parquet_path.exists():
-    print("[*] Dataset base nao encontrado. Gerando dados sinteticos canonicos (Self-Healing)...")
+    print("[*] Base dataset not found. Generating canonical synthetic data (Self-Healing)...")
     mem_con = duckdb.connect()
     mem_con.execute(f"""
         CREATE TABLE raw_transactions AS
@@ -50,11 +50,11 @@ if not parquet_path.exists():
         COPY raw_transactions TO '{parquet_path.as_posix()}' (FORMAT PARQUET);
     """)
     mem_con.close()
-    print(f"[OK] Arquivo '{parquet_path}' gerado com sucesso!")
+    print(f"[OK] Successfully generated '{parquet_path}'!")
 
-# 3. Inicializar a base DuckDB
+# 3. Initialize DuckDB analytical database
 con = duckdb.connect(str(db_path))
 con.execute(f"CREATE OR REPLACE TABLE transactions AS SELECT * FROM '{parquet_path.as_posix()}';")
 total = con.execute("SELECT COUNT(*) FROM transactions").fetchone()[0]
 con.close()
-print(f"[OK] Base analytics.duckdb inicializada com {total} registros na tabela 'transactions'.")
+print(f"[OK] Database analytics.duckdb initialized with {total} records in 'transactions' table.")
